@@ -54,6 +54,12 @@
     <Compile Include="Forms\MainWindow.Designer.cs">
       <DependentUpon>MainWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="OpenGL\Gl.cs" />
+    <Compile Include="OpenGL\GlCore.cs" />
+    <Compile Include="OpenGL\GlDelegates.cs" />
+    <Compile Include="OpenGL\GlEnum.cs" />
+    <Compile Include="OpenGL\GlMethods.cs" />
+    <Compile Include="OpenGL\GlReload.cs" />
     <Compile Include="OpenGL\GLU.cs" />
     <Compile Include="OpenGL\GLUT.cs" />
     <Compile Include="OpenGL\OpenGL.cs" />
@@ -61,6 +67,10 @@
     <Compile Include="Program.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="CjClutter.ObjLoader.Loader, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\CjClutter.ObjLoader.Loader.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
