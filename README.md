@@ -1,2 +1,2 @@
-# Quadocopter_3D
+# Helicopter_3D
 Computer Graphics Course Final Project
