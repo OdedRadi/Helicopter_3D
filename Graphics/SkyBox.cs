@@ -33,7 +33,7 @@ namespace Graphics
 		public void Init()
 		{
 			initTexture();
-			m_yTranslate = m_textureSize - 1;
+			m_yTranslate = m_textureSize - 300;
 			m_zTranslate = -m_textureSize + 300;
 		}
 
@@ -54,11 +54,6 @@ namespace Graphics
 			{
 				Bitmap image = new Bitmap(bmpFilesPath[i]);
 				image.RotateFlip(RotateFlipType.RotateNoneFlipY); //Y axis in Windows is directed downwards, while in OpenGL-upwards
-
-				/*if (i == 0 || i == 3) // instead of drawing the texture in different way in drawSquareSurface, we flip here the texture
-				{
-					image.RotateFlip(RotateFlipType.RotateNoneFlipX);
-				}*/
 
 				Rectangle rect = new Rectangle(0, 0, image.Width, image.Height);
 				BitmapData bitmapData = image.LockBits(rect, ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format24bppRgb);

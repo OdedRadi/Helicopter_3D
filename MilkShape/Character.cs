@@ -104,7 +104,7 @@ namespace Milkshape
                         int index = pTri.vertexIndices[k];
 
                         // rotate according to transformation matrix
-                        Matrix final = new Matrix(model_data.Joints[model_data.Vertices[index].boneID].mat_final);
+                        //Matrix final = new Matrix(model_data.Joints[model_data.Vertices[index].boneID].mat_final);
 
                         GL.glTexCoord2f(pTri.s[k], pTri.t[k]);
 
@@ -112,12 +112,12 @@ namespace Milkshape
                         float[] norm = new float[3] { pTri.vertexNormals[0 + scalar], pTri.vertexNormals[1 + scalar], pTri.vertexNormals[2 + scalar] };
 
                         Vector newNormal = new Vector(norm);
-                        newNormal.Transform3(final);
+                        //newNormal.Transform3(final);
                         newNormal.Normalize();
                         GL.glNormal3fv(newNormal.GetVector);
 
                         Vector newVertex = new Vector(model_data.Vertices[index].location);
-                        newVertex.Transform(final);
+                        //newVertex.Transform(final);
                         GL.glVertex3fv(newVertex.GetVector);
                     }
                 }

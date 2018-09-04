@@ -41,9 +41,8 @@ namespace Engine
 		{
 			m_scene.Draw();
 		}
-		private int _totalDelta = 0;
 
-		public void HandleMousheWheel(object sender, MouseEventArgs e)
+		public void HandleMouseWheel(object sender, MouseEventArgs e)
 		{
 			m_scene.ChangeLookDistance(e.Delta > 0 ? eLookDistance.Closer: eLookDistance.Further);		
 		}

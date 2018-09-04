@@ -14,7 +14,7 @@ namespace Forms
             engine.Init(drawPanel.Size, (uint)drawPanel.Handle.ToInt32());
             KeyDown += engine.HandleKeyDown;
 			KeyUp += engine.HandleKeyUp;
-			MouseWheel += engine.HandleMousheWheel;
+			MouseWheel += engine.HandleMouseWheel;
         }
 	}
 }

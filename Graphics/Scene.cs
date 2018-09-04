@@ -10,6 +10,9 @@ namespace Graphics
 		private const double m_minFovyAngle = 45;
 		private double m_fovyAngle = 75;
 
+		public float xSceneRotate { get; set; }
+		public float ySceneRotate { get; set; }
+
 		private int m_width = 0;
 		private int m_height = 0;
 
@@ -42,8 +45,8 @@ namespace Graphics
 			initRenderingGL();
 			initPerspective();
 
-			m_skyBox.Init();
 			m_quadocopter.Init();
+			m_skyBox.Init();
 		}
 
 		private void initPixelFormat()
@@ -119,7 +122,10 @@ namespace Graphics
 			
 			GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
 			GL.glLoadIdentity();
-
+			GL.glClearColor(1, 1, 1,1);
+			GL.glRotatef(xSceneRotate, 1, 0, 0);
+			GL.glRotatef(ySceneRotate, 0, 1, 0);
+			
 			createLightning();
 			m_quadocopter.Draw();
 			GL.glDisable(GL.GL_LIGHTING);
