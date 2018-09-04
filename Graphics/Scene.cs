@@ -20,7 +20,7 @@ namespace Graphics
 		private uint m_uint_RC = 0;
 		
 		private SkyBox m_skyBox = new SkyBox();
-		private Quadocopter m_quadocopter = new Quadocopter();
+		private Helicopter m_quadocopter = new Helicopter();
 
 		public Scene(Size sceneSize, uint sceneWindowId)
 		{

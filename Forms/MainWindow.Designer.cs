@@ -52,7 +52,7 @@
 			this.MaximizeBox = false;
 			this.MinimumSize = new System.Drawing.Size(420, 420);
 			this.Name = "MainWindow";
-			this.Text = "Quadocopter";
+			this.Text = "Helicopter";
 			this.ResumeLayout(false);
 
 		}

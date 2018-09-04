@@ -6,23 +6,23 @@ using OpenGL;
 
 namespace Graphics
 {
-	public class Quadocopter : IGraphicComponent
+	public class Helicopter : IGraphicComponent
 	{
 		private uint m_heliTexture;
 		private Character m_heliBody = new Character("../../Resources/HeliBody.ms3d");
 		private Character m_heliSmallRotor = new Character("../../Resources/HeliSmallRotor.ms3d");
 		private Character m_heliMainRotor = new Character("../../Resources/HeliMainRotor.ms3d");
-	
+
 		// Small rotor params
-		private const float m_smallRotorYRotate = 5f;
-		private const float m_smallRotorZRotate = -35f;
+		private const float m_smallRotorYTranslate = 5.248f; // According to MilkShape data
+		private const float m_smallRotorZTranslate = -34.847f; // According to MilkShape data
 		private const float m_smallRotorRotateSpeed = 10;
 		private float m_smallRotorAngle = 0;
 
 		// Main rotor params
-		private const float m_mainRotorXRotate = -2;
+		private const float m_mainRotorXTranslate = -2.392f; // According to MilkShape data
+		private const float m_mainRotorZTranslate = 9.346f; // According to MilkShape data
 		private const float m_mainRotorRotateSpeed = 10;
-		private const float m_mainRotorZRotate = 9.2f;
 		private float m_mainRotateAngle = 0;
 
 		private float m_forwardPitchingAngle = 0;
@@ -36,7 +36,7 @@ namespace Graphics
 		public eThrottleStick ThrottleStickState { get; set; }
 		public eDirectionStick DirectionStickState { get; set; }
 
-		~Quadocopter()
+		~Helicopter()
 		{
 		}
 
@@ -93,14 +93,14 @@ namespace Graphics
 
 			GL.glPopMatrix();
 		}
-		
+
 		private void drawAndMoveSmallRotor()
 		{
 			GL.glPushMatrix();
-			GL.glTranslated(0, m_smallRotorYRotate, m_smallRotorZRotate);
+			GL.glTranslated(0, m_smallRotorYTranslate, m_smallRotorZTranslate);
 			GL.glRotatef(m_smallRotorAngle, 1, 0, 0);
 			m_smallRotorAngle += m_smallRotorRotateSpeed;
-			GL.glTranslated(0, -m_smallRotorYRotate, -m_smallRotorZRotate);
+			GL.glTranslated(0, -m_smallRotorYTranslate, -m_smallRotorZTranslate);
 			m_heliSmallRotor.DrawModel();
 			GL.glPopMatrix();
 		}
@@ -108,10 +108,10 @@ namespace Graphics
 		private void drawAndMoveMainRotor()
 		{
 			GL.glPushMatrix();
-			GL.glTranslated(m_mainRotorXRotate, 0, m_mainRotorZRotate);
+			GL.glTranslated(m_mainRotorXTranslate, 0, m_mainRotorZTranslate);
 			GL.glRotatef(m_mainRotateAngle, 0, -1, 0);
 			m_mainRotateAngle += m_mainRotorRotateSpeed;
-			GL.glTranslated(-m_mainRotorXRotate, 0, -m_mainRotorZRotate);
+			GL.glTranslated(-m_mainRotorXTranslate, 0, -m_mainRotorZTranslate);
 			m_heliMainRotor.DrawModel();
 			GL.glPopMatrix();
 		}
