@@ -72,7 +72,7 @@ namespace OpenGL
             internal static BindTransformFeedback glBindTransformFeedback;
             internal delegate void BindVertexArray(UInt32 array);
             internal static BindVertexArray glBindVertexArray;
-            internal delegate void BindVertexBuffer(UInt32 bindingindex, UInt32 buffer, IntPtr offset, IntPtr stride);
+            internal delegate void BindVertexBuffer(UInt32 bindingindex, UInt32 buffer, IntPtr offset, Int32 stride);
             internal static BindVertexBuffer glBindVertexBuffer;
             internal delegate void VertexArrayVertexBuffer(UInt32 vaobj, UInt32 bindingindex, UInt32 buffer, IntPtr offset, Int32 stride);
             internal static VertexArrayVertexBuffer glVertexArrayVertexBuffer;
@@ -210,7 +210,7 @@ namespace OpenGL
             internal static CopyTextureSubImage3D glCopyTextureSubImage3D;
             internal delegate void CreateBuffers(Int32 n, UInt32[] buffers);
             internal static CreateBuffers glCreateBuffers;
-            internal delegate void CreateFramebuffers(Int32 n, UInt32[] ids);
+            internal delegate void CreateFramebuffers(Int32 n, UInt32[] framebuffers);
             internal static CreateFramebuffers glCreateFramebuffers;
             internal delegate UInt32 CreateProgram();
             internal static CreateProgram glCreateProgram;
@@ -414,11 +414,11 @@ namespace OpenGL
             internal static GetActiveAtomicCounterBufferiv glGetActiveAtomicCounterBufferiv;
             internal delegate void GetActiveAttrib(UInt32 program, UInt32 index, Int32 bufSize, [OutAttribute] Int32[] length, [OutAttribute] Int32[] size, [OutAttribute] OpenGL.ActiveAttribType[] type, [OutAttribute] System.Text.StringBuilder name);
             internal static GetActiveAttrib glGetActiveAttrib;
-            internal delegate void GetActiveSubroutineName(UInt32 program, OpenGL.ShaderType shadertype, UInt32 index, Int32 bufsize, [OutAttribute] Int32[] length, [OutAttribute] System.Text.StringBuilder name);
+            internal delegate void GetActiveSubroutineName(UInt32 program, OpenGL.ShaderType shadertype, UInt32 index, Int32 bufSize, [OutAttribute] Int32[] length, [OutAttribute] System.Text.StringBuilder name);
             internal static GetActiveSubroutineName glGetActiveSubroutineName;
             internal delegate void GetActiveSubroutineUniformiv(UInt32 program, OpenGL.ShaderType shadertype, UInt32 index, OpenGL.SubroutineParameterName pname, [OutAttribute] Int32[] values);
             internal static GetActiveSubroutineUniformiv glGetActiveSubroutineUniformiv;
-            internal delegate void GetActiveSubroutineUniformName(UInt32 program, OpenGL.ShaderType shadertype, UInt32 index, Int32 bufsize, [OutAttribute] Int32[] length, [OutAttribute] System.Text.StringBuilder name);
+            internal delegate void GetActiveSubroutineUniformName(UInt32 program, OpenGL.ShaderType shadertype, UInt32 index, Int32 bufSize, [OutAttribute] Int32[] length, [OutAttribute] System.Text.StringBuilder name);
             internal static GetActiveSubroutineUniformName glGetActiveSubroutineUniformName;
             internal delegate void GetActiveUniform(UInt32 program, UInt32 index, Int32 bufSize, [OutAttribute] Int32[] length, [OutAttribute] Int32[] size, [OutAttribute] OpenGL.ActiveUniformType[] type, [OutAttribute] System.Text.StringBuilder name);
             internal static GetActiveUniform glGetActiveUniform;
@@ -488,7 +488,7 @@ namespace OpenGL
             internal static GetPointerv glGetPointerv;
             internal delegate void GetProgramiv(UInt32 program, OpenGL.ProgramParameter pname, [OutAttribute] Int32[] @params);
             internal static GetProgramiv glGetProgramiv;
-            internal delegate void GetProgramBinary(UInt32 program, Int32 bufsize, [OutAttribute] Int32[] length, [OutAttribute] Int32[] binaryFormat, [OutAttribute] IntPtr binary);
+            internal delegate void GetProgramBinary(UInt32 program, Int32 bufSize, [OutAttribute] Int32[] length, [OutAttribute] Int32[] binaryFormat, [OutAttribute] IntPtr binary);
             internal static GetProgramBinary glGetProgramBinary;
             internal delegate void GetProgramInfoLog(UInt32 program, Int32 maxLength, [OutAttribute] Int32[] length, [OutAttribute] System.Text.StringBuilder infoLog);
             internal static GetProgramInfoLog glGetProgramInfoLog;
@@ -906,9 +906,9 @@ namespace OpenGL
             internal static TexParameterIiv glTexParameterIiv;
             internal delegate void TexParameterIuiv(OpenGL.TextureTarget target, OpenGL.TextureParameterName pname, UInt32[] @params);
             internal static TexParameterIuiv glTexParameterIuiv;
-            internal delegate void TextureParameterfv(UInt32 texture, OpenGL.TextureParameter pname, Single[] paramtexture);
+            internal delegate void TextureParameterfv(UInt32 texture, OpenGL.TextureParameter pname, Single[] @params);
             internal static TextureParameterfv glTextureParameterfv;
-            internal delegate void TextureParameteriv(UInt32 texture, OpenGL.TextureParameter pname, Int32[] param);
+            internal delegate void TextureParameteriv(UInt32 texture, OpenGL.TextureParameter pname, Int32[] @params);
             internal static TextureParameteriv glTextureParameteriv;
             internal delegate void TextureParameterIiv(UInt32 texture, OpenGL.TextureParameter pname, Int32[] @params);
             internal static TextureParameterIiv glTextureParameterIiv;

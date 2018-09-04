@@ -70,7 +70,7 @@ namespace OpenGL
             [DllImport(Gl.Library, EntryPoint = "glBindVertexArray", ExactSpelling = true)]
             internal extern static void BindVertexArray(UInt32 array);
             [DllImport(Gl.Library, EntryPoint = "glBindVertexBuffer", ExactSpelling = true)]
-            internal extern static void BindVertexBuffer(UInt32 bindingindex, UInt32 buffer, IntPtr offset, IntPtr stride);
+            internal extern static void BindVertexBuffer(UInt32 bindingindex, UInt32 buffer, IntPtr offset, Int32 stride);
             [DllImport(Gl.Library, EntryPoint = "glVertexArrayVertexBuffer", ExactSpelling = true)]
             internal extern static void VertexArrayVertexBuffer(UInt32 vaobj, UInt32 bindingindex, UInt32 buffer, IntPtr offset, Int32 stride);
             [DllImport(Gl.Library, EntryPoint = "glBindVertexBuffers", ExactSpelling = true)]
@@ -208,7 +208,7 @@ namespace OpenGL
             [DllImport(Gl.Library, EntryPoint = "glCreateBuffers", ExactSpelling = true)]
             internal extern static void CreateBuffers(Int32 n, UInt32[] buffers);
             [DllImport(Gl.Library, EntryPoint = "glCreateFramebuffers", ExactSpelling = true)]
-            internal extern static void CreateFramebuffers(Int32 n, UInt32[] ids);
+            internal extern static void CreateFramebuffers(Int32 n, UInt32[] framebuffers);
             [DllImport(Gl.Library, EntryPoint = "glCreateProgram", ExactSpelling = true)]
             internal extern static UInt32 CreateProgram();
             [DllImport(Gl.Library, EntryPoint = "glCreateProgramPipelines", ExactSpelling = true)]
@@ -412,11 +412,11 @@ namespace OpenGL
             [DllImport(Gl.Library, EntryPoint = "glGetActiveAttrib", ExactSpelling = true)]
             internal extern static void GetActiveAttrib(UInt32 program, UInt32 index, Int32 bufSize, [OutAttribute] Int32[] length, [OutAttribute] Int32[] size, [OutAttribute] OpenGL.ActiveAttribType[] type, [OutAttribute] System.Text.StringBuilder name);
             [DllImport(Gl.Library, EntryPoint = "glGetActiveSubroutineName", ExactSpelling = true)]
-            internal extern static void GetActiveSubroutineName(UInt32 program, OpenGL.ShaderType shadertype, UInt32 index, Int32 bufsize, [OutAttribute] Int32[] length, [OutAttribute] System.Text.StringBuilder name);
+            internal extern static void GetActiveSubroutineName(UInt32 program, OpenGL.ShaderType shadertype, UInt32 index, Int32 bufSize, [OutAttribute] Int32[] length, [OutAttribute] System.Text.StringBuilder name);
             [DllImport(Gl.Library, EntryPoint = "glGetActiveSubroutineUniformiv", ExactSpelling = true)]
             internal extern static void GetActiveSubroutineUniformiv(UInt32 program, OpenGL.ShaderType shadertype, UInt32 index, OpenGL.SubroutineParameterName pname, [OutAttribute] Int32[] values);
             [DllImport(Gl.Library, EntryPoint = "glGetActiveSubroutineUniformName", ExactSpelling = true)]
-            internal extern static void GetActiveSubroutineUniformName(UInt32 program, OpenGL.ShaderType shadertype, UInt32 index, Int32 bufsize, [OutAttribute] Int32[] length, [OutAttribute] System.Text.StringBuilder name);
+            internal extern static void GetActiveSubroutineUniformName(UInt32 program, OpenGL.ShaderType shadertype, UInt32 index, Int32 bufSize, [OutAttribute] Int32[] length, [OutAttribute] System.Text.StringBuilder name);
             [DllImport(Gl.Library, EntryPoint = "glGetActiveUniform", ExactSpelling = true)]
             internal extern static void GetActiveUniform(UInt32 program, UInt32 index, Int32 bufSize, [OutAttribute] Int32[] length, [OutAttribute] Int32[] size, [OutAttribute] OpenGL.ActiveUniformType[] type, [OutAttribute] System.Text.StringBuilder name);
             [DllImport(Gl.Library, EntryPoint = "glGetActiveUniformBlockiv", ExactSpelling = true)]
@@ -486,7 +486,7 @@ namespace OpenGL
             [DllImport(Gl.Library, EntryPoint = "glGetProgramiv", ExactSpelling = true)]
             internal extern static void GetProgramiv(UInt32 program, OpenGL.ProgramParameter pname, [OutAttribute] Int32[] @params);
             [DllImport(Gl.Library, EntryPoint = "glGetProgramBinary", ExactSpelling = true)]
-            internal extern static void GetProgramBinary(UInt32 program, Int32 bufsize, [OutAttribute] Int32[] length, [OutAttribute] Int32[] binaryFormat, [OutAttribute] IntPtr binary);
+            internal extern static void GetProgramBinary(UInt32 program, Int32 bufSize, [OutAttribute] Int32[] length, [OutAttribute] Int32[] binaryFormat, [OutAttribute] IntPtr binary);
             [DllImport(Gl.Library, EntryPoint = "glGetProgramInfoLog", ExactSpelling = true)]
             internal extern static void GetProgramInfoLog(UInt32 program, Int32 maxLength, [OutAttribute] Int32[] length, [OutAttribute] System.Text.StringBuilder infoLog);
             [DllImport(Gl.Library, EntryPoint = "glGetProgramInterfaceiv", ExactSpelling = true)]
@@ -904,9 +904,9 @@ namespace OpenGL
             [DllImport(Gl.Library, EntryPoint = "glTexParameterIuiv", ExactSpelling = true)]
             internal extern static void TexParameterIuiv(OpenGL.TextureTarget target, OpenGL.TextureParameterName pname, UInt32[] @params);
             [DllImport(Gl.Library, EntryPoint = "glTextureParameterfv", ExactSpelling = true)]
-            internal extern static void TextureParameterfv(UInt32 texture, OpenGL.TextureParameter pname, Single[] paramtexture);
+            internal extern static void TextureParameterfv(UInt32 texture, OpenGL.TextureParameter pname, Single[] @params);
             [DllImport(Gl.Library, EntryPoint = "glTextureParameteriv", ExactSpelling = true)]
-            internal extern static void TextureParameteriv(UInt32 texture, OpenGL.TextureParameter pname, Int32[] param);
+            internal extern static void TextureParameteriv(UInt32 texture, OpenGL.TextureParameter pname, Int32[] @params);
             [DllImport(Gl.Library, EntryPoint = "glTextureParameterIiv", ExactSpelling = true)]
             internal extern static void TextureParameterIiv(UInt32 texture, OpenGL.TextureParameter pname, Int32[] @params);
             [DllImport(Gl.Library, EntryPoint = "glTextureParameterIuiv", ExactSpelling = true)]

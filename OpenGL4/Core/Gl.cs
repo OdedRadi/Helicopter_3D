@@ -167,7 +167,7 @@ namespace OpenGL
             Delegates.glBindVertexArray(array);
         }
 
-        public static void BindVertexBuffer(UInt32 bindingindex, UInt32 buffer, IntPtr offset, IntPtr stride)
+        public static void BindVertexBuffer(UInt32 bindingindex, UInt32 buffer, IntPtr offset, Int32 stride)
         {
             Delegates.glBindVertexBuffer(bindingindex, buffer, offset, stride);
         }
@@ -512,9 +512,9 @@ namespace OpenGL
             Delegates.glCreateBuffers(n, buffers);
         }
 
-        public static void CreateFramebuffers(Int32 n, UInt32[] ids)
+        public static void CreateFramebuffers(Int32 n, UInt32[] framebuffers)
         {
-            Delegates.glCreateFramebuffers(n, ids);
+            Delegates.glCreateFramebuffers(n, framebuffers);
         }
 
         public static UInt32 CreateProgram()
@@ -1052,9 +1052,9 @@ namespace OpenGL
             Delegates.glGetActiveAttrib(program, (UInt32)index, bufSize, length, size, type, name);
         }
 
-        public static void GetActiveSubroutineName(UInt32 program, OpenGL.ShaderType shadertype, UInt32 index, Int32 bufsize, [OutAttribute] Int32[] length, [OutAttribute] System.Text.StringBuilder name)
+        public static void GetActiveSubroutineName(UInt32 program, OpenGL.ShaderType shadertype, UInt32 index, Int32 bufSize, [OutAttribute] Int32[] length, [OutAttribute] System.Text.StringBuilder name)
         {
-            Delegates.glGetActiveSubroutineName(program, shadertype, index, bufsize, length, name);
+            Delegates.glGetActiveSubroutineName(program, shadertype, index, bufSize, length, name);
         }
 
         public static void GetActiveSubroutineUniformiv(UInt32 program, OpenGL.ShaderType shadertype, UInt32 index, OpenGL.SubroutineParameterName pname, [OutAttribute] Int32[] values)
@@ -1068,15 +1068,15 @@ namespace OpenGL
             Delegates.glGetActiveSubroutineUniformiv(program, shadertype, (UInt32)index, pname, values);
         }
 
-        public static void GetActiveSubroutineUniformName(UInt32 program, OpenGL.ShaderType shadertype, UInt32 index, Int32 bufsize, [OutAttribute] Int32[] length, [OutAttribute] System.Text.StringBuilder name)
+        public static void GetActiveSubroutineUniformName(UInt32 program, OpenGL.ShaderType shadertype, UInt32 index, Int32 bufSize, [OutAttribute] Int32[] length, [OutAttribute] System.Text.StringBuilder name)
         {
-            Delegates.glGetActiveSubroutineUniformName(program, shadertype, index, bufsize, length, name);
+            Delegates.glGetActiveSubroutineUniformName(program, shadertype, index, bufSize, length, name);
         }
 
-        public static void GetActiveSubroutineUniformName(UInt32 program, OpenGL.ShaderType shadertype, Int32 index, Int32 bufsize, [OutAttribute] Int32[] length, [OutAttribute] System.Text.StringBuilder name)
+        public static void GetActiveSubroutineUniformName(UInt32 program, OpenGL.ShaderType shadertype, Int32 index, Int32 bufSize, [OutAttribute] Int32[] length, [OutAttribute] System.Text.StringBuilder name)
         {
             if (index < 0) throw new ArgumentOutOfRangeException("index");
-            Delegates.glGetActiveSubroutineUniformName(program, shadertype, (UInt32)index, bufsize, length, name);
+            Delegates.glGetActiveSubroutineUniformName(program, shadertype, (UInt32)index, bufSize, length, name);
         }
 
         public static void GetActiveUniform(UInt32 program, UInt32 index, Int32 bufSize, [OutAttribute] Int32[] length, [OutAttribute] Int32[] size, [OutAttribute] OpenGL.ActiveUniformType[] type, [OutAttribute] System.Text.StringBuilder name)
@@ -1255,9 +1255,9 @@ namespace OpenGL
             Delegates.glGetProgramiv(program, pname, @params);
         }
 
-        public static void GetProgramBinary(UInt32 program, Int32 bufsize, [OutAttribute] Int32[] length, [OutAttribute] Int32[] binaryFormat, [OutAttribute] IntPtr binary)
+        public static void GetProgramBinary(UInt32 program, Int32 bufSize, [OutAttribute] Int32[] length, [OutAttribute] Int32[] binaryFormat, [OutAttribute] IntPtr binary)
         {
-            Delegates.glGetProgramBinary(program, bufsize, length, binaryFormat, binary);
+            Delegates.glGetProgramBinary(program, bufSize, length, binaryFormat, binary);
         }
 
         public static void GetProgramInfoLog(UInt32 program, Int32 maxLength, [OutAttribute] Int32[] length, [OutAttribute] System.Text.StringBuilder infoLog)
@@ -2343,14 +2343,14 @@ namespace OpenGL
             Delegates.glTexParameterIuiv(target, pname, @params);
         }
 
-        public static void TextureParameterfv(UInt32 texture, OpenGL.TextureParameter pname, Single[] paramtexture)
+        public static void TextureParameterfv(UInt32 texture, OpenGL.TextureParameter pname, Single[] @params)
         {
-            Delegates.glTextureParameterfv(texture, pname, paramtexture);
+            Delegates.glTextureParameterfv(texture, pname, @params);
         }
 
-        public static void TextureParameteriv(UInt32 texture, OpenGL.TextureParameter pname, Int32[] param)
+        public static void TextureParameteriv(UInt32 texture, OpenGL.TextureParameter pname, Int32[] @params)
         {
-            Delegates.glTextureParameteriv(texture, pname, param);
+            Delegates.glTextureParameteriv(texture, pname, @params);
         }
 
         public static void TextureParameterIiv(UInt32 texture, OpenGL.TextureParameter pname, Int32[] @params)

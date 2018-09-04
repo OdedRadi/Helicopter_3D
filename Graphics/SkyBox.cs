@@ -61,7 +61,7 @@ namespace Graphics
 				}*/
 
 				Rectangle rect = new Rectangle(0, 0, image.Width, image.Height);
-				BitmapData bitmapData = image.LockBits(rect, ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
+				BitmapData bitmapData = image.LockBits(rect, ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
 
 				GL.glBindTexture(GL.GL_TEXTURE_2D, textureList[i]);
 				//  VN-in order to use System.Drawing.Imaging.BitmapData Scan0 I've added overloaded version to
