@@ -54,6 +54,11 @@
     <Compile Include="Forms\MainWindow.Designer.cs">
       <DependentUpon>MainWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="MathEX\Matrix.cs" />
+    <Compile Include="MathEX\Vector.cs" />
+    <Compile Include="MilkShape\Character.cs" />
+    <Compile Include="MilkShape\MilkshapeModel.cs" />
+    <Compile Include="MilkShape\Model.cs" />
     <Compile Include="OpenGL4\Constructs\Billboard.cs" />
     <Compile Include="OpenGL4\Constructs\BitmapFont.cs" />
     <Compile Include="OpenGL4\Constructs\FBO.cs" />
@@ -89,15 +94,10 @@
     <Compile Include="Program.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="CjClutter.ObjLoader.Loader, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>bin\Debug\CjClutter.ObjLoader.Loader.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Forms\MainWindow.resx">
