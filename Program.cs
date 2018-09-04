@@ -1,7 +1,7 @@
 ﻿using Engine;
-using System.Windows.Forms;
+using Forms;
 
-namespace Forms
+namespace Helicopter
 {
 	class Program
 	{
