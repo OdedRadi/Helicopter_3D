@@ -119,46 +119,5 @@ namespace Graphics
 			GL.glDisable(GL.GL_TEXTURE_2D);
 			GL.glPopMatrix();
 		}
-
-
-		private void checkThrottleStickState()
-		{
-			if (ThrottleStickState.HasFlag(eThrottleStick.Ascend))
-			{
-				m_yTranslate -= m_acsendingDecsendingSpeed;
-			}
-			if (ThrottleStickState.HasFlag(eThrottleStick.Descend))
-			{
-				m_yTranslate += m_acsendingDecsendingSpeed;
-			}
-			if (ThrottleStickState.HasFlag(eThrottleStick.Right))
-			{
-				m_yRotate += m_rotatingSpeed;
-			}
-			if (ThrottleStickState.HasFlag(eThrottleStick.Left))
-			{
-				m_yRotate -= m_rotatingSpeed;
-			}
-		}
-
-		private void checkDirectionStickState()
-		{
-			if (DirectionStickState.HasFlag(eDirectionStick.Forward))
-			{
-				m_zTranslate += m_forwardBackwardSpeed;
-			}
-			if (DirectionStickState.HasFlag(eDirectionStick.Backward))
-			{
-				m_zTranslate -= m_forwardBackwardSpeed;
-			}
-			if (DirectionStickState.HasFlag(eDirectionStick.Right))
-			{
-				m_xTranslate -= m_sideFlyingSpeed;
-			}
-			if (DirectionStickState.HasFlag(eDirectionStick.Left))
-			{
-				m_xTranslate += m_sideFlyingSpeed;
-			}
-		}
 	}
 }

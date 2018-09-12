@@ -18,9 +18,9 @@ namespace Graphics
 		private float m_yTranslate;
 		private float m_zTranslate;
 
-		private float m_xRotate;
+		//private float m_xRotate;
 		private float m_yRotate;
-		private float m_zRotate;
+		//private float m_zRotate;
 
 		private int m_width = 0;
 		private int m_height = 0;
@@ -224,28 +224,24 @@ namespace Graphics
 		public void ThrottleStickActivate(eThrottleStick throttleStickState)
 		{
 			m_helicopter.ThrottleStickState |= throttleStickState;
-			m_skyBox.ThrottleStickState |= throttleStickState;
 			m_throttleStickState |= throttleStickState;
 		}
 
 		public void ThrottleStickDeactivate(eThrottleStick throttleStickState)
 		{
 			m_helicopter.ThrottleStickState &= ~throttleStickState;
-			m_skyBox.ThrottleStickState &= ~throttleStickState;
 			m_throttleStickState &= ~throttleStickState;
 		}
 
 		public void DirectionStickActivate(eDirectionStick directionStickState)
 		{
 			m_helicopter.DirectionStickState |= directionStickState;
-			m_skyBox.DirectionStickState |= directionStickState;
 			m_directionStickState |= directionStickState;
 		}
 
 		public void DirectionStickDeactivate(eDirectionStick directionStickState)
 		{
 			m_helicopter.DirectionStickState &= ~directionStickState;
-			m_skyBox.DirectionStickState &= ~directionStickState;
 			m_directionStickState &= ~directionStickState;
 		}
 		#endregion

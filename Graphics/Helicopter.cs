@@ -116,14 +116,14 @@ namespace Graphics
 			{
 				if (value < maxValue)
 				{
-					value += m_rotatingSpeed;
+					value += m_rollingSpeed;
 				}
 			}
 			else
 			{
 				if (value > 0)
 				{
-					value -= m_rotatingSpeed;
+					value -= m_rollingSpeed;
 				}
 			}
 		}
