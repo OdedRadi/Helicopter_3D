@@ -329,3 +329,7 @@ ASALocalRun/
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
 /3d_objects
+/Resources/skyscraper.jpg
+/Resources/skyscraper.bmp
+/Resources/clouds_texture.jpg
+/Resources/clouds_texture.bmp

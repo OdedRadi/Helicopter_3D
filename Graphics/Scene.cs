@@ -1,4 +1,5 @@
 ﻿using OpenGL;
+using System;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -10,17 +11,27 @@ namespace Graphics
 		private const double m_minFovyAngle = 45;
 		private double m_fovyAngle = 75;
 
-		public float xSceneRotate { get; set; }
-		public float ySceneRotate { get; set; }
+		private eThrottleStick m_throttleStickState = eThrottleStick.None;
+		private eDirectionStick m_directionStickState = eDirectionStick.None;
+
+		private float m_xTranslate;
+		private float m_yTranslate;
+		private float m_zTranslate;
+
+		private float m_xRotate;
+		private float m_yRotate;
+		private float m_zRotate;
 
 		private int m_width = 0;
 		private int m_height = 0;
 
 		private uint m_uint_DC = 0;
 		private uint m_uint_RC = 0;
-		
+
 		private SkyBox m_skyBox = new SkyBox();
-		private Helicopter m_quadocopter = new Helicopter();
+		private Helicopter m_helicopter = new Helicopter();
+		private Skyscraper m_skyscraper = new Skyscraper();
+		private Light m_light = new Light();
 
 		public Scene(Size sceneSize, uint sceneWindowId)
 		{
@@ -45,8 +56,12 @@ namespace Graphics
 			initRenderingGL();
 			initPerspective();
 
-			m_quadocopter.Init();
+			m_zTranslate = -10;
+
+			m_helicopter.Init();
 			m_skyBox.Init();
+			m_skyscraper.Init();
+			m_light.Init();
 		}
 
 		private void initPixelFormat()
@@ -114,25 +129,74 @@ namespace Graphics
 			GL.glLoadIdentity();
 		}
 		#endregion
-		
+
 		public void Draw()
 		{
 			if (m_uint_DC == 0 || m_uint_RC == 0)
 				return;
-			
+
 			GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
 			GL.glLoadIdentity();
-			GL.glClearColor(1, 1, 1,1);
-			GL.glRotatef(xSceneRotate, 1, 0, 0);
-			GL.glRotatef(ySceneRotate, 0, 1, 0);
-			
-			createLightning();
-			m_quadocopter.Draw();
-			GL.glDisable(GL.GL_LIGHTING);
-			m_skyBox.Draw();
-			
+
+			m_helicopter.Draw(); // the helicopter is not affected by translation or ratoation (first person)
+			checkSticktsState();
+			GL.glRotatef(m_yRotate, 0, 1, 0);
+			m_skyBox.Draw(); // the skybox always keep the same distance from the helicopter, so it is not affected by translation
+			GL.glTranslatef(m_xTranslate, m_yTranslate, m_zTranslate);		
+			m_skyscraper.Draw(); // the buildings moving, its looks like the helicopter is moving
+
 			GL.glFlush();
 			WGL.wglSwapBuffers(m_uint_DC);
+		}
+
+		private void checkSticktsState()
+		{
+			checkThrottleStickState();
+			checkDirectionStickState();
+		}
+
+		private void checkThrottleStickState()
+		{
+			if (m_throttleStickState.HasFlag(eThrottleStick.Ascend))
+			{
+				m_yTranslate -= 2;
+			}
+			if (m_throttleStickState.HasFlag(eThrottleStick.Descend))
+			{
+				m_yTranslate += 2;
+			}
+			if (m_throttleStickState.HasFlag(eThrottleStick.Right))
+			{
+				m_yRotate += 1;
+			}
+			if (m_throttleStickState.HasFlag(eThrottleStick.Left))
+			{
+				m_yRotate -= 1;
+			}
+		}
+
+		private void checkDirectionStickState()
+		{
+			if (m_directionStickState.HasFlag(eDirectionStick.Forward))
+			{
+				m_xTranslate -= (float)Math.Sin((Math.PI / 180) * m_yRotate);
+				m_zTranslate += (float)Math.Cos((Math.PI / 180) * m_yRotate);
+			}
+			if (m_directionStickState.HasFlag(eDirectionStick.Backward))
+			{
+				m_xTranslate += (float)Math.Sin((Math.PI / 180) * m_yRotate);
+				m_zTranslate -= (float)Math.Cos((Math.PI / 180) * m_yRotate);
+			}
+			if (m_directionStickState.HasFlag(eDirectionStick.Right))
+			{
+				m_xTranslate -= (float)Math.Cos((Math.PI / 180) * (m_yRotate));
+				m_zTranslate -= (float)Math.Sin((Math.PI / 180) * (m_yRotate));
+			}
+			if (m_directionStickState.HasFlag(eDirectionStick.Left))
+			{
+				m_xTranslate += (float)Math.Cos((Math.PI / 180) * (m_yRotate));
+				m_zTranslate += (float)Math.Sin((Math.PI / 180) * (m_yRotate));
+			}
 		}
 
 		public void ChangeLookDistance(eLookDistance lookDistance)
@@ -159,71 +223,52 @@ namespace Graphics
 		#region sticks handlers
 		public void ThrottleStickActivate(eThrottleStick throttleStickState)
 		{
-			m_quadocopter.ThrottleStickState |= throttleStickState;
+			m_helicopter.ThrottleStickState |= throttleStickState;
 			m_skyBox.ThrottleStickState |= throttleStickState;
+			m_throttleStickState |= throttleStickState;
 		}
 
 		public void ThrottleStickDeactivate(eThrottleStick throttleStickState)
 		{
-			m_quadocopter.ThrottleStickState &= ~throttleStickState;
+			m_helicopter.ThrottleStickState &= ~throttleStickState;
 			m_skyBox.ThrottleStickState &= ~throttleStickState;
+			m_throttleStickState &= ~throttleStickState;
 		}
-		
+
 		public void DirectionStickActivate(eDirectionStick directionStickState)
 		{
-			m_quadocopter.DirectionStickState |= directionStickState;
+			m_helicopter.DirectionStickState |= directionStickState;
 			m_skyBox.DirectionStickState |= directionStickState;
+			m_directionStickState |= directionStickState;
 		}
 
 		public void DirectionStickDeactivate(eDirectionStick directionStickState)
 		{
-			m_quadocopter.DirectionStickState &= ~directionStickState;
+			m_helicopter.DirectionStickState &= ~directionStickState;
 			m_skyBox.DirectionStickState &= ~directionStickState;
+			m_directionStickState &= ~directionStickState;
 		}
 		#endregion
 
 		#region gyro private funcs
-		private void createLightning()
-		{
-			GL.glPushMatrix();
-
-			float[] lightPos = new float[4];
-			lightPos[0] = 5; 
-			lightPos[1] = 5; 
-			lightPos[2] = 5; 
-			lightPos[3] = 1;
-
-			// draw light source as solid sphere
-			GL.glColor3f(1, 0, 0);
-			GL.glTranslatef(lightPos[0], lightPos[1], lightPos[2]);
-			GLUT.glutSolidSphere(1, 16, 16);
-
-			GL.glLightfv(GL.GL_LIGHT0, GL.GL_POSITION, lightPos);
-			GL.glEnable(GL.GL_LIGHTING);
-			GL.glEnable(GL.GL_LIGHT0);
-			GL.glEnable(GL.GL_COLOR_MATERIAL);
-
-			GL.glPopMatrix();
-		}
-
-		/*private void drawAxes()
+		private void drawAxes()
 		{
 			GL.glBegin(GL.GL_LINES);
 			//x  RED
 			GL.glColor3f(1.0f, 0.0f, 0.0f);
 			GL.glVertex3f(0.0f, 0.0f, 0.0f);
-			GL.glVertex3f(3.0f, 0.0f, 0.0f);
+			GL.glVertex3f(300.0f, 0.0f, 0.0f);
 			//y  GREEN 
 			GL.glColor3f(0.0f, 1.0f, 0.0f);
 			GL.glVertex3f(0.0f, 0.0f, 0.0f);
-			GL.glVertex3f(0.0f, 3.0f, 0.0f);
+			GL.glVertex3f(0.0f, 300.0f, 0.0f);
 			//z  BLUE
 			GL.glColor3f(0.0f, 0.0f, 1.0f);
 			GL.glVertex3f(0.0f, 0.0f, 0.0f);
-			GL.glVertex3f(0.0f, 0.0f, 3.0f);
+			GL.glVertex3f(0.0f, 0.0f, 300.0f);
 
 			GL.glEnd();
-		}*/
+		}
 
 		/*private void drawSquareSurface(float width, float height, float depth, eAxis axis)
 		{

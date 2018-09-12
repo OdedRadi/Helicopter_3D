@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{CFA84439-19D7-427F-AEB3-051E0780292A}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>Quadocopter</RootNamespace>
-    <AssemblyName>Quadocopter</AssemblyName>
+    <RootNamespace>Helicopter</RootNamespace>
+    <AssemblyName>Helicopter</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -36,14 +36,18 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="Resources\HeliBody.ms3d" />
+    <None Include="Resources\HeliMainRotor.ms3d" />
+    <None Include="Resources\HeliSmallRotor.ms3d" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Graphics\eLookDistance.cs" />
-    <Compile Include="Engine\SceneEngine.cs" />
+    <Compile Include="Logics\SceneEngine.cs" />
     <Compile Include="Graphics\eDirectionStick.cs" />
     <Compile Include="Graphics\eThrottleStick.cs" />
-    <Compile Include="Graphics\Renderer.cs" />
-    <Compile Include="Graphics\Shader.cs" />
+    <Compile Include="Graphics\Light.cs" />
+    <Compile Include="Graphics\Reflection.cs" />
+    <Compile Include="Graphics\Shadow.cs" />
     <Compile Include="Graphics\SkyBox.cs" />
     <Compile Include="Graphics\Helicopter.cs" />
     <Compile Include="Graphics\IGraphicComponent.cs" />
@@ -54,6 +58,7 @@
     <Compile Include="Forms\MainWindow.Designer.cs">
       <DependentUpon>MainWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="Graphics\Skyscraper.cs" />
     <Compile Include="MathEX\Matrix.cs" />
     <Compile Include="MathEX\Vector.cs" />
     <Compile Include="MilkShape\Character.cs" />
@@ -62,6 +67,7 @@
     <Compile Include="OpenGL\GLU.cs" />
     <Compile Include="OpenGL\GLUT.cs" />
     <Compile Include="OpenGL\OpenGL.cs" />
+    <Compile Include="Logics\TextureLoader.cs" />
     <Compile Include="OpenGL\WGL.cs" />
     <Compile Include="Program.cs" />
   </ItemGroup>
@@ -84,6 +90,8 @@
     <Content Include="Resources\environment_left.bmp" />
     <Content Include="Resources\environment_right.bmp" />
     <Content Include="Resources\environment_top.bmp" />
+    <Content Include="Resources\leviathnbody8bit256.bmp" />
+    <Content Include="Resources\White.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

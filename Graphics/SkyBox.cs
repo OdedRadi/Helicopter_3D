@@ -1,4 +1,5 @@
-﻿using OpenGL;
+﻿using Logics;
+using OpenGL;
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -19,15 +20,12 @@ namespace Graphics
 		private uint m_bottomTexture;
 		private uint m_rightTexture;
 		private uint m_leftTexture;
-		
+
 		private float m_xTranslate;
 		private float m_yTranslate;
 		private float m_zTranslate;
 		private float m_yRotate;
-
-		public eThrottleStick ThrottleStickState{ get; set; }
-		public eDirectionStick DirectionStickState { get; set; }
-
+		
 		public Action<eDirectionStick> DirectionLimitsEvent;
 
 		public void Init()
@@ -39,8 +37,7 @@ namespace Graphics
 
 		private void initTexture()
 		{
-			uint[] textureList = new uint[6];
-			string[] bmpFilesPath = new string[textureList.Length];
+			string[] bmpFilesPath = new string[6];
 
 			bmpFilesPath[0] = "../../Resources/environment_front.bmp";
 			bmpFilesPath[1] = "../../Resources/environment_back.bmp";
@@ -49,48 +46,22 @@ namespace Graphics
 			bmpFilesPath[4] = "../../Resources/environment_right.bmp";
 			bmpFilesPath[5] = "../../Resources/environment_left.bmp";
 
-			GL.glGenTextures(textureList.Length, textureList);
-			for (int i = 0; i < textureList.Length; i++)
-			{
-				Bitmap image = new Bitmap(bmpFilesPath[i]);
-				image.RotateFlip(RotateFlipType.RotateNoneFlipY); //Y axis in Windows is directed downwards, while in OpenGL-upwards
+			uint[] textureList = TextureLoader.LoadTextures(bmpFilesPath);
 
-				Rectangle rect = new Rectangle(0, 0, image.Width, image.Height);
-				BitmapData bitmapData = image.LockBits(rect, ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
-
-				GL.glBindTexture(GL.GL_TEXTURE_2D, textureList[i]);
-				//  VN-in order to use System.Drawing.Imaging.BitmapData Scan0 I've added overloaded version to
-				//  OpenGL.cs
-				//  [DllImport(GL_DLL, EntryPoint = "glTexImage2D")]
-				//  public static extern void glTexImage2D(uint target, int level, int internalformat, int width, int height, int border, uint format, uint type, IntPtr pixels);
-				GL.glTexImage2D(GL.GL_TEXTURE_2D, 0, (int)GL.GL_RGB8, image.Width, image.Height,
-					0, GL.GL_BGR_EXT, GL.GL_UNSIGNED_byte, bitmapData.Scan0);
-				GL.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, (int)GL.GL_LINEAR);      // Linear Filtering
-				GL.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, (int)GL.GL_LINEAR);      // Linear Filtering
-
-				image.UnlockBits(bitmapData);
-				image.Dispose();
-			}
-
-			m_frontTexture= textureList[0];
+			m_frontTexture = textureList[0];
 			m_backTexture = textureList[1];
 			m_topTexture = textureList[2];
 			m_bottomTexture = textureList[3];
 			m_rightTexture = textureList[4];
 			m_leftTexture = textureList[5];
 		}
-		
+
 		public void Draw()
 		{
 			GL.glPushMatrix();
 			GL.glEnable(GL.GL_TEXTURE_2D);
 			GL.glColor3f(1, 1, 1);
 
-			checkThrottleStickState();
-			checkDirectionStickState();
-			GL.glTranslatef(m_xTranslate, m_yTranslate, m_zTranslate);
-			GL.glRotatef(m_yRotate, 0, 1, 0);
-			
 			// front
 			GL.glBindTexture(GL.GL_TEXTURE_2D, m_frontTexture);
 			GL.glBegin(GL.GL_QUADS);
@@ -169,7 +140,7 @@ namespace Graphics
 				m_yRotate -= m_rotatingSpeed;
 			}
 		}
-		
+
 		private void checkDirectionStickState()
 		{
 			if (DirectionStickState.HasFlag(eDirectionStick.Forward))

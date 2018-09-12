@@ -1,6 +1,4 @@
-﻿using System;
-using System.Drawing;
-using System.Drawing.Imaging;
+﻿using Logics;
 using Milkshape;
 using OpenGL;
 
@@ -16,13 +14,13 @@ namespace Graphics
 		// Small rotor params
 		private const float m_smallRotorYTranslate = 5.248f; // According to MilkShape data
 		private const float m_smallRotorZTranslate = -34.847f; // According to MilkShape data
-		private const float m_smallRotorRotateSpeed = 10;
+		private const float m_smallRotorRotateSpeed = 20;
 		private float m_smallRotorAngle = 0;
 
 		// Main rotor params
 		private const float m_mainRotorXTranslate = -2.392f; // According to MilkShape data
 		private const float m_mainRotorZTranslate = 9.346f; // According to MilkShape data
-		private const float m_mainRotorRotateSpeed = 10;
+		private const float m_mainRotorRotateSpeed = 20;
 		private float m_mainRotateAngle = 0;
 
 		private float m_forwardPitchingAngle = 0;
@@ -30,8 +28,9 @@ namespace Graphics
 		private float m_rightRollingAngle = 0;
 		private float m_leftRollingAngle = 0;
 
-		private const float m_maxPitchingAngle = 25.0f;
-		private const float m_maxRollingAngle = 45.0f;
+		private const float m_maxPitchingAngle = 20.0f;
+		private const float m_maxRollingAngle = 60.0f;
+		private const float m_rollingSpeed = 2.0f;
 
 		public eThrottleStick ThrottleStickState { get; set; }
 		public eDirectionStick DirectionStickState { get; set; }
@@ -48,29 +47,11 @@ namespace Graphics
 
 		private void initTexture()
 		{
-			uint[] texture = new uint[1];
-			string bmpFilePath = "../../Resources/leviathnbody8bit256.bmp";
+			string[] bmpFilePath = new string[1];
 
-			GL.glGenTextures(texture.Length, texture);
+			bmpFilePath[0] = "../../Resources/leviathnbody8bit256.bmp";
 
-			Bitmap image = new Bitmap(bmpFilePath);
-			image.RotateFlip(RotateFlipType.RotateNoneFlipY); //Y axis in Windows is directed downwards, while in OpenGL-upwards
-
-			Rectangle rect = new Rectangle(0, 0, image.Width, image.Height);
-			BitmapData bitmapData = image.LockBits(rect, ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
-
-			GL.glBindTexture(GL.GL_TEXTURE_2D, texture[0]);
-			//  VN-in order to use System.Drawing.Imaging.BitmapData Scan0 I've added overloaded version to
-			//  OpenGL.cs
-			//  [DllImport(GL_DLL, EntryPoint = "glTexImage2D")]
-			//  public static extern void glTexImage2D(uint target, int level, int internalformat, int width, int height, int border, uint format, uint type, IntPtr pixels);
-			GL.glTexImage2D(GL.GL_TEXTURE_2D, 0, (int)GL.GL_RGB8, image.Width, image.Height,
-				0, GL.GL_BGR_EXT, GL.GL_UNSIGNED_byte, bitmapData.Scan0);
-			GL.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, (int)GL.GL_LINEAR);      // Linear Filtering
-			GL.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, (int)GL.GL_LINEAR);      // Linear Filtering
-
-			image.UnlockBits(bitmapData);
-			image.Dispose();
+			uint[] texture = TextureLoader.LoadTextures(bmpFilePath);
 
 			m_heliTexture = texture[0];
 		}
@@ -81,8 +62,8 @@ namespace Graphics
 		{
 			GL.glPushMatrix();
 			GL.glColor3d(1, 1, 1);
-			GL.glTranslated(0, 0, -50);
-			GL.glScaled(0.8, 0.8, -0.8);
+			GL.glTranslated(0, 0, -10);
+			GL.glScalef(0.1f, 0.1f, -0.1f);
 			GL.glRotated(-2, 0, 1, 0);
 
 			rotateAccordingToDirectionStick();
@@ -135,14 +116,14 @@ namespace Graphics
 			{
 				if (value < maxValue)
 				{
-					value += 2;
+					value += m_rotatingSpeed;
 				}
 			}
 			else
 			{
 				if (value > 0)
 				{
-					value -= 2;
+					value -= m_rotatingSpeed;
 				}
 			}
 		}
