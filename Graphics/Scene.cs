@@ -76,6 +76,7 @@ namespace Graphics
 			pixelFormatDescriptor.cColorBits = 32;
 			pixelFormatDescriptor.cDepthBits = 32;
 			pixelFormatDescriptor.iLayerType = (byte)(WGL.PFD_MAIN_PLANE);
+			pixelFormatDescriptor.cStencilBits = 32;
 
 			pixelFormatIndex = WGL.ChoosePixelFormat(m_uint_DC, ref pixelFormatDescriptor);
 			if (pixelFormatIndex == 0)
@@ -135,21 +136,99 @@ namespace Graphics
 			if (m_uint_DC == 0 || m_uint_RC == 0)
 				return;
 
-			GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
+			GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT | GL.GL_STENCIL_BUFFER_BIT);
 			GL.glLoadIdentity();
+			GL.glTranslated(0, 0, -5);
+			
+			checkSticksState();
 
-			m_helicopter.Draw(); // the helicopter is not affected by translation or ratoation (first person)
-			checkSticktsState();
-			GL.glRotatef(m_yRotate, 0, 1, 0);
-			m_skyBox.Draw(); // the skybox always keep the same distance from the helicopter, so it is not affected by translation
-			GL.glTranslatef(m_xTranslate, m_yTranslate, m_zTranslate);		
-			m_skyscraper.Draw(); // the buildings moving, its looks like the helicopter is moving
+			// the world is moving (the helicopter always on 0,0,0), its looks like the helicopter is moving
+			GL.glRotatef(m_yRotate, 0, 1, 0);			
+			GL.glTranslatef(m_xTranslate, m_yTranslate, m_zTranslate);
+			drawReflectedScene();
+			m_skyscraper.Draw(); 
 
+			// the skybox always keep the same distance from the helicopter, so it is not affected by translation
+			GL.glTranslatef(-m_xTranslate, -m_yTranslate, -m_zTranslate);
+			m_skyBox.Draw();
+
+			// the helicopter is not affected by translation or ratoation (first person)
+			GL.glRotatef(m_yRotate, 0, -1, 0);
+			m_helicopter.Draw(); 
+			
 			GL.glFlush();
 			WGL.wglSwapBuffers(m_uint_DC);
 		}
 
-		private void checkSticktsState()
+		private void drawReflectedScene()
+		{
+			m_skyscraper.BeginDrawReflection();
+
+			GL.glPushMatrix();
+			GL.glScalef(1, 1, -1);
+
+			m_skyBox.Draw();
+
+			if (m_zTranslate < -1) // the helicopter drawing only on the front wall of the skyscraper
+			{
+				GL.glTranslatef(-m_xTranslate, -m_yTranslate, -m_zTranslate); // the real helicopter is always at 0,0,0, so we go back to 0,0,0
+				GL.glTranslatef(0, 0, 1);
+				GL.glRotatef(m_yRotate, 0, -1, 0); // to enable reflcted helicopter rotating
+				m_helicopter.Draw();
+			}
+
+			GL.glPopMatrix();
+
+			m_skyscraper.StopDrawReflection();
+		}
+
+		public void ChangeLookDistance(eLookDistance lookDistance)
+		{
+			switch (lookDistance)
+			{
+				case eLookDistance.Further:
+					if (m_fovyAngle < m_maxFovyAngle)
+					{
+						m_fovyAngle++;
+					}
+					break;
+				case eLookDistance.Closer:
+					if (m_fovyAngle > m_minFovyAngle)
+					{
+						m_fovyAngle--;
+					}
+					break;
+			}
+
+			initPerspective();
+		}
+
+		#region sticks handlers
+		public void ThrottleStickActivate(eThrottleStick throttleStickState)
+		{
+			m_helicopter.ThrottleStickState |= throttleStickState;
+			m_throttleStickState |= throttleStickState;
+		}
+
+		public void ThrottleStickDeactivate(eThrottleStick throttleStickState)
+		{
+			m_helicopter.ThrottleStickState &= ~throttleStickState;
+			m_throttleStickState &= ~throttleStickState;
+		}
+
+		public void DirectionStickActivate(eDirectionStick directionStickState)
+		{
+			m_helicopter.DirectionStickState |= directionStickState;
+			m_directionStickState |= directionStickState;
+		}
+
+		public void DirectionStickDeactivate(eDirectionStick directionStickState)
+		{
+			m_helicopter.DirectionStickState &= ~directionStickState;
+			m_directionStickState &= ~directionStickState;
+		}
+
+		private void checkSticksState()
 		{
 			checkThrottleStickState();
 			checkDirectionStickState();
@@ -198,55 +277,8 @@ namespace Graphics
 				m_zTranslate += (float)Math.Sin((Math.PI / 180) * (m_yRotate));
 			}
 		}
-
-		public void ChangeLookDistance(eLookDistance lookDistance)
-		{
-			switch (lookDistance)
-			{
-				case eLookDistance.Further:
-					if (m_fovyAngle < m_maxFovyAngle)
-					{
-						m_fovyAngle++;
-					}
-					break;
-				case eLookDistance.Closer:
-					if (m_fovyAngle > m_minFovyAngle)
-					{
-						m_fovyAngle--;
-					}
-					break;
-			}
-
-			initPerspective();
-		}
-
-		#region sticks handlers
-		public void ThrottleStickActivate(eThrottleStick throttleStickState)
-		{
-			m_helicopter.ThrottleStickState |= throttleStickState;
-			m_throttleStickState |= throttleStickState;
-		}
-
-		public void ThrottleStickDeactivate(eThrottleStick throttleStickState)
-		{
-			m_helicopter.ThrottleStickState &= ~throttleStickState;
-			m_throttleStickState &= ~throttleStickState;
-		}
-
-		public void DirectionStickActivate(eDirectionStick directionStickState)
-		{
-			m_helicopter.DirectionStickState |= directionStickState;
-			m_directionStickState |= directionStickState;
-		}
-
-		public void DirectionStickDeactivate(eDirectionStick directionStickState)
-		{
-			m_helicopter.DirectionStickState &= ~directionStickState;
-			m_directionStickState &= ~directionStickState;
-		}
 		#endregion
-
-		#region gyro private funcs
+		
 		private void drawAxes()
 		{
 			GL.glBegin(GL.GL_LINES);
@@ -265,36 +297,5 @@ namespace Graphics
 
 			GL.glEnd();
 		}
-
-		/*private void drawSquareSurface(float width, float height, float depth, eAxis axis)
-		{
-			GL.glBegin(GL.GL_QUADS);
-
-			// if there is no texture bind, the glTexCoord2f do nothing
-			switch (axis)
-			{
-				case eAxis.X:
-					GL.glTexCoord2f(0.0f, 0.0f); GL.glVertex3f(width, 0, 0);
-					GL.glTexCoord2f(1.0f, 0.0f); GL.glVertex3f(width, 0, depth);
-					GL.glTexCoord2f(1.0f, 1.0f); GL.glVertex3f(width, height, depth);
-					GL.glTexCoord2f(0.0f, 1.0f); GL.glVertex3f(width, height, 0);
-					break;
-				case eAxis.Y:
-					GL.glVertex3f(0, height, 0);
-					GL.glVertex3f(0, height, depth);
-					GL.glVertex3f(width, height, depth);
-					GL.glVertex3f(width, height, 0);
-					break;
-				case eAxis.Z:
-					GL.glTexCoord2f(0.0f, 0.0f); GL.glVertex3f(0, 0, depth);
-					GL.glTexCoord2f(0.0f, 1.0f); GL.glVertex3f(0, height, depth);
-					GL.glTexCoord2f(1.0f, 1.0f); GL.glVertex3f(width, height, depth);
-					GL.glTexCoord2f(1.0f, 0.0f); GL.glVertex3f(width, 0, depth);
-					break;
-			}
-
-			GL.glEnd();
-		}*/
-		#endregion
 	}
 }

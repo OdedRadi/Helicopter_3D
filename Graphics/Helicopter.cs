@@ -62,9 +62,7 @@ namespace Graphics
 		{
 			GL.glPushMatrix();
 			GL.glColor3d(1, 1, 1);
-			GL.glTranslated(0, 0, -10);
-			GL.glScalef(0.1f, 0.1f, -0.1f);
-			GL.glRotated(-2, 0, 1, 0);
+			GL.glScalef(0.07f, 0.07f, -0.07f);
 
 			rotateAccordingToDirectionStick();
 
