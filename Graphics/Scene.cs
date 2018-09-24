@@ -57,6 +57,7 @@ namespace Graphics
 			initPerspective();
 
 			m_zTranslate = -10;
+			m_yTranslate = -1;
 
 			m_helicopter.Init();
 			m_skyBox.Init();
@@ -146,13 +147,13 @@ namespace Graphics
 			GL.glRotatef(m_yRotate, 0, 1, 0);			
 			GL.glTranslatef(m_xTranslate, m_yTranslate, m_zTranslate);
 			drawReflectedScene();
-			m_skyscraper.Draw(); 
+			m_skyscraper.Draw();
 
 			// the skybox always keep the same distance from the helicopter, so it is not affected by translation
 			GL.glTranslatef(-m_xTranslate, -m_yTranslate, -m_zTranslate);
 			m_skyBox.Draw();
 
-			// the helicopter is not affected by translation or ratoation (first person)
+			// the helicopter is not affected by translation or rotation (first person view)
 			GL.glRotatef(m_yRotate, 0, -1, 0);
 			m_helicopter.Draw(); 
 			
@@ -172,7 +173,6 @@ namespace Graphics
 			if (m_zTranslate < -1) // the helicopter drawing only on the front wall of the skyscraper
 			{
 				GL.glTranslatef(-m_xTranslate, -m_yTranslate, -m_zTranslate); // the real helicopter is always at 0,0,0, so we go back to 0,0,0
-				GL.glTranslatef(0, 0, 1);
 				GL.glRotatef(m_yRotate, 0, -1, 0); // to enable reflcted helicopter rotating
 				m_helicopter.Draw();
 			}
@@ -238,11 +238,11 @@ namespace Graphics
 		{
 			if (m_throttleStickState.HasFlag(eThrottleStick.Ascend))
 			{
-				m_yTranslate -= 2;
+				m_yTranslate -= 0.2f;
 			}
 			if (m_throttleStickState.HasFlag(eThrottleStick.Descend))
 			{
-				m_yTranslate += 2;
+				m_yTranslate += 0.2f;
 			}
 			if (m_throttleStickState.HasFlag(eThrottleStick.Right))
 			{
@@ -258,23 +258,23 @@ namespace Graphics
 		{
 			if (m_directionStickState.HasFlag(eDirectionStick.Forward))
 			{
-				m_xTranslate -= (float)Math.Sin((Math.PI / 180) * m_yRotate);
-				m_zTranslate += (float)Math.Cos((Math.PI / 180) * m_yRotate);
+				m_xTranslate -= (float)Math.Sin((Math.PI / 180) * m_yRotate) * 0.2f;
+				m_zTranslate += (float)Math.Cos((Math.PI / 180) * m_yRotate) * 0.2f;
 			}
 			if (m_directionStickState.HasFlag(eDirectionStick.Backward))
 			{
-				m_xTranslate += (float)Math.Sin((Math.PI / 180) * m_yRotate);
-				m_zTranslate -= (float)Math.Cos((Math.PI / 180) * m_yRotate);
+				m_xTranslate += (float)Math.Sin((Math.PI / 180) * m_yRotate) * 0.2f;
+				m_zTranslate -= (float)Math.Cos((Math.PI / 180) * m_yRotate) * 0.2f;
 			}
 			if (m_directionStickState.HasFlag(eDirectionStick.Right))
 			{
-				m_xTranslate -= (float)Math.Cos((Math.PI / 180) * (m_yRotate));
-				m_zTranslate -= (float)Math.Sin((Math.PI / 180) * (m_yRotate));
+				m_xTranslate -= (float)Math.Cos((Math.PI / 180) * m_yRotate) * 0.2f;
+				m_zTranslate -= (float)Math.Sin((Math.PI / 180) * m_yRotate) * 0.2f;
 			}
 			if (m_directionStickState.HasFlag(eDirectionStick.Left))
 			{
-				m_xTranslate += (float)Math.Cos((Math.PI / 180) * (m_yRotate));
-				m_zTranslate += (float)Math.Sin((Math.PI / 180) * (m_yRotate));
+				m_xTranslate += (float)Math.Cos((Math.PI / 180) * m_yRotate) * 0.2f;
+				m_zTranslate += (float)Math.Sin((Math.PI / 180) * m_yRotate) * 0.2f;
 			}
 		}
 		#endregion

@@ -46,8 +46,6 @@
     <Compile Include="Graphics\eDirectionStick.cs" />
     <Compile Include="Graphics\eThrottleStick.cs" />
     <Compile Include="Graphics\Light.cs" />
-    <Compile Include="Graphics\Reflection.cs" />
-    <Compile Include="Graphics\Shadow.cs" />
     <Compile Include="Graphics\SkyBox.cs" />
     <Compile Include="Graphics\Helicopter.cs" />
     <Compile Include="Graphics\IGraphicComponent.cs" />

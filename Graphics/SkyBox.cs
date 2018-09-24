@@ -1,14 +1,11 @@
 ﻿using Logics;
 using OpenGL;
-using System;
-using System.Drawing;
-using System.Drawing.Imaging;
 
 namespace Graphics
 {
 	public class SkyBox : IGraphicComponent
 	{
-		private const float m_textureSize = 1024.0f;
+		private const float m_textureSize = 256;
 		private const float m_acsendingDecsendingSpeed = 4;
 		private const float m_rotatingSpeed = 1;
 		private const float m_forwardBackwardSpeed = 4;
@@ -20,19 +17,10 @@ namespace Graphics
 		private uint m_bottomTexture;
 		private uint m_rightTexture;
 		private uint m_leftTexture;
-
-		private float m_xTranslate;
-		private float m_yTranslate;
-		private float m_zTranslate;
-		private float m_yRotate;
 		
-		public Action<eDirectionStick> DirectionLimitsEvent;
-
 		public void Init()
 		{
 			initTexture();
-			m_yTranslate = m_textureSize - 300;
-			m_zTranslate = -m_textureSize + 300;
 		}
 
 		private void initTexture()
@@ -59,6 +47,7 @@ namespace Graphics
 		public void Draw()
 		{
 			GL.glPushMatrix();
+			//GL.glTranslatef(0, m_textureSize-10, 0);
 			GL.glEnable(GL.GL_TEXTURE_2D);
 			GL.glColor3f(1, 1, 1);
 
