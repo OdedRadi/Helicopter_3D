@@ -1,4 +1,5 @@
 ﻿using System;
+using Logics;
 using OpenGL;
 
 namespace Graphics
@@ -18,6 +19,9 @@ namespace Graphics
 
 		private const float m_floorWidth = 30;
 
+		private readonly float[] m_floorNormal = { 0.0f, 1.0f, 0.0f };
+		private readonly float[] m_leftWallNormal = { 1.0f, 0.0f, 0.0f };
+
 		public void Init()
 		{
 			initTexture();
@@ -30,28 +34,17 @@ namespace Graphics
 			bmpFilesNames[0] = "../../Resources/building_texture.bmp";
 			bmpFilesNames[1] = "../../Resources/stone_floor.bmp";
 
-			uint[] texture = Logics.TextureLoader.LoadTextures(bmpFilesNames);
+			uint[] texture = TextureLoader.LoadTextures(bmpFilesNames);
 
 			m_wallsTexture = texture[0];
 			m_floorTexture = texture[1];
 		}
-
+		
 		public void BeginDrawReflection()
 		{
-			GL.glEnable(GL.GL_STENCIL_TEST);
-			GL.glStencilOp(GL.GL_REPLACE, GL.GL_REPLACE, GL.GL_REPLACE);
-			GL.glStencilFunc(GL.GL_ALWAYS, 1, 0xFFFFFFFF);
-			GL.glColorMask((byte)GL.GL_FALSE, (byte)GL.GL_FALSE, (byte)GL.GL_FALSE, (byte)GL.GL_FALSE);
-			GL.glDisable(GL.GL_DEPTH_TEST);
-			
+			beginStencilDrawing();
 			drawWindows(); // drawing windows on the front wall to the stencil buffer
-
-			// restore regular settings
-			GL.glColorMask((byte)GL.GL_TRUE, (byte)GL.GL_TRUE, (byte)GL.GL_TRUE, (byte)GL.GL_TRUE);
-			GL.glEnable(GL.GL_DEPTH_TEST);
-
-			GL.glStencilFunc(GL.GL_EQUAL, 1, 0xFFFFFFFF);
-			GL.glStencilOp(GL.GL_KEEP, GL.GL_KEEP, GL.GL_KEEP);
+			endStencilDrawing();
 
 			// drawing reflected floor
 			GL.glPushMatrix();
@@ -63,6 +56,74 @@ namespace Graphics
 		public void StopDrawReflection()
 		{
 			GL.glDisable(GL.GL_STENCIL_TEST);
+		}
+		
+		public void BeginFloorStencil()
+		{
+			beginStencilDrawing();
+			drawFloor();
+			endStencilDrawing();
+		}
+
+		public void StopFloorStencil()
+		{
+			GL.glDisable(GL.GL_STENCIL_TEST);
+		}
+		
+
+		public void BeginReflectedFloorStencil()
+		{
+			beginStencilDrawing();
+
+			// first drawing the windows area
+			GL.glStencilOp(GL.GL_KEEP, GL.GL_KEEP, GL.GL_REPLACE);
+			GL.glStencilFunc(GL.GL_ALWAYS, 1, 0xFFFFFFFF);
+			drawWindows();
+
+			// then increment the floor area, so where is windows and floor togther will be 2
+			GL.glStencilOp(GL.GL_KEEP, GL.GL_KEEP, GL.GL_INCR);
+			GL.glStencilFunc(GL.GL_ALWAYS, 1, 0xFFFFFFFF);
+			drawFloor();
+
+			endStencilDrawing();
+
+			// drawing only where both windows and floor area
+			GL.glStencilFunc(GL.GL_EQUAL, 2, 0xFFFFFFFF);
+			GL.glStencilOp(GL.GL_KEEP, GL.GL_KEEP, GL.GL_KEEP);
+		}
+
+		private void beginStencilDrawing()
+		{
+			GL.glClear(GL.GL_STENCIL_BUFFER_BIT);
+
+			GL.glEnable(GL.GL_STENCIL_TEST);
+			GL.glStencilOp(GL.GL_REPLACE, GL.GL_REPLACE, GL.GL_REPLACE);
+			GL.glStencilFunc(GL.GL_ALWAYS, 1, 0xFFFFFFFF);
+			GL.glColorMask((byte)GL.GL_FALSE, (byte)GL.GL_FALSE, (byte)GL.GL_FALSE, (byte)GL.GL_FALSE);
+			GL.glDisable(GL.GL_DEPTH_TEST);
+		}
+
+		private void endStencilDrawing()
+		{
+			// restore regular settings
+			GL.glColorMask((byte)GL.GL_TRUE, (byte)GL.GL_TRUE, (byte)GL.GL_TRUE, (byte)GL.GL_TRUE);
+			GL.glEnable(GL.GL_DEPTH_TEST);
+
+			GL.glStencilFunc(GL.GL_EQUAL, 1, 0xFFFFFFFF);
+			GL.glStencilOp(GL.GL_KEEP, GL.GL_KEEP, GL.GL_KEEP);
+		}
+
+		public float[] GetFloorShadowMatrix(float[] lightPosition)
+		{
+			float[] pointOnTheFloor = new float[3];
+
+			pointOnTheFloor[0] = 0;
+			pointOnTheFloor[1] = Scene.GetInstance().yTranslate;
+			pointOnTheFloor[2] = 0;
+
+			float[] floorShadowMatrix = ShadowMatrixGenerator.GenerateShadowMatrix(m_floorNormal, pointOnTheFloor, lightPosition);
+
+			return floorShadowMatrix;
 		}
 
 		public void Draw()
@@ -84,21 +145,25 @@ namespace Graphics
 			GL.glPushMatrix();
 
 			// front wall has windows
+			GL.glNormal3f(0, 0, 1);
 			drawWindowsWall();
 
 			// left wall
 			GL.glRotatef(90, 0, 1, 0);
+			GL.glNormal3f(0, 0, -1);
 			drawWall(m_allWindowsWidth, m_allWindowsHeight);
 
 			// right wall
 			GL.glRotatef(-90, 0, 1, 0);
 			GL.glTranslatef(m_allWindowsWidth, 0, 0);
 			GL.glRotatef(90, 0, 1, 0);
+			GL.glNormal3f(0, 0, 1);
 			drawWall(m_allWindowsWidth, m_allWindowsHeight);
 
 			// back wall
 			GL.glTranslatef(m_allWindowsWidth, 0, 0);
 			GL.glRotatef(90, 0, 1, 0);
+			GL.glNormal3f(0, 0, 1);
 			drawWall(m_allWindowsWidth, m_allWindowsHeight);
 
 			GL.glPopMatrix();
@@ -120,6 +185,7 @@ namespace Graphics
 
 			GL.glColor3f(1, 1, 1);
 			GL.glBegin(GL.GL_QUADS);
+			GL.glNormal3f(0, 1, 0);
 
 			GL.glTexCoord2f(0.0f, 0.0f); GL.glVertex3f(-m_floorWidth, 0, -m_floorWidth);
 			GL.glTexCoord2f(m_floorWidth / 2, 0.0f); GL.glVertex3f(m_floorWidth, 0, -(m_floorWidth));
@@ -186,6 +252,55 @@ namespace Graphics
 			drawWindows();
 		}
 
+		public void DrawShadow()
+		{
+			GL.glPushMatrix();
+			
+			// front wall
+			GL.glBegin(GL.GL_QUADS);
+			GL.glVertex3f(0, 0, 0);
+			GL.glVertex3f(m_allWindowsWidth, 0, 0);
+			GL.glVertex3f(m_allWindowsWidth, m_allWindowsHeight, 0);
+			GL.glVertex3f(0, m_allWindowsHeight, 0);
+			GL.glEnd();
+			
+			// left wall
+			GL.glRotatef(90, 0, 1, 0);
+			GL.glTranslatef(0, 0.1f, 0);
+
+			GL.glBegin(GL.GL_QUADS);
+			GL.glVertex3f(0, 0, 0);
+			GL.glVertex3f(m_allWindowsWidth, 0, 0);
+			GL.glVertex3f(m_allWindowsWidth, m_allWindowsHeight, 0);
+			GL.glVertex3f(0, m_allWindowsHeight, 0);
+			GL.glEnd();
+			
+			// right wall
+			GL.glRotatef(-90, 0, 1, 0);
+			GL.glTranslatef(m_allWindowsWidth, 0, 0);
+			GL.glRotatef(90, 0, 1, 0);
+
+			GL.glBegin(GL.GL_QUADS);
+			GL.glVertex3f(0, 0, 0);
+			GL.glVertex3f(m_allWindowsWidth, 0, 0);
+			GL.glVertex3f(m_allWindowsWidth, m_allWindowsHeight, 0);
+			GL.glVertex3f(0, m_allWindowsHeight, 0);
+			GL.glEnd();
+			
+			// back wall
+			GL.glTranslatef(m_allWindowsWidth, 0, 0);
+			GL.glRotatef(90, 0, 1, 0);
+
+			GL.glBegin(GL.GL_QUADS);
+			GL.glVertex3f(0, 0, 0);
+			GL.glVertex3f(m_allWindowsWidth, 0, 0);
+			GL.glVertex3f(m_allWindowsWidth, m_allWindowsHeight, 0);
+			GL.glVertex3f(0, m_allWindowsHeight, 0);
+			GL.glEnd();
+			
+			GL.glPopMatrix();
+		}
+
 		private void drawHorizontalSeperators()
 		{
 			GL.glBegin(GL.GL_QUADS);
@@ -245,13 +360,5 @@ namespace Graphics
 
 			GL.glEnd();
 		}
-
-		int m_firstwall = 0;
-
-		internal void SetFirstWallIndex(int v)
-		{
-			m_firstwall = v;
-		}
-		
 	}
 }

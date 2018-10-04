@@ -29,7 +29,8 @@ namespace Logics
 
 		public void Init(Size sceneSize, uint sceneWindowId)
 		{
-			m_scene = new Scene(sceneSize, sceneWindowId);
+			m_scene = Scene.GetInstance();
+			m_scene.Init(sceneSize, sceneWindowId);
 		}
 
 		public void Start()

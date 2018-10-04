@@ -4,40 +4,48 @@ namespace Graphics
 {
 	class Light
 	{
-		private float[] m_position = { 5, 5, 5, 1 };
+		private uint m_glLightId;
 
-		public void Init()
+		public void Init(uint lightID, float x, float y, float z)
 		{
-			GL.glLightfv(GL.GL_LIGHT0, GL.GL_POSITION, m_position);
+			m_glLightId = 0x4000 + lightID;
+			X = x;
+			Y = y;
+			Z = z;
 		}
+
+		public float X { get; private set; }
+		public float Y { get; private set; }
+		public float Z { get; private set; }
 
 		public void SetEnable(bool enable)
 		{
-
-			drawLightSource();
 			if (enable == true)
 			{
+				float[] position = { X, Y, Z, 1 };
+
+				GL.glLightfv(m_glLightId, GL.GL_POSITION, position);
+
+				GL.glLightfv(GL.GL_LIGHT0, GL.GL_AMBIENT, new float[] { 0.3f, 0.3f, 0.3f, 1f });
+
 				GL.glEnable(GL.GL_LIGHTING);
-				GL.glEnable(GL.GL_LIGHT0);
+				GL.glEnable(m_glLightId);
 				GL.glEnable(GL.GL_COLOR_MATERIAL);
 			}
 			else
 			{
 				GL.glDisable(GL.GL_LIGHTING);
-				GL.glDisable(GL.GL_LIGHT0);
+				GL.glDisable(m_glLightId);
 				GL.glDisable(GL.GL_COLOR_MATERIAL);
 			}
 		}
 
-		private void drawLightSource()
+		public void DrawLightSource()
 		{
 			GL.glPushMatrix();
 
-			GL.glTranslatef(0,0,-10);
-			
-
-			GL.glColor4d(1, 0, 0, 0.5);
-			GL.glTranslatef(m_position[0], m_position[1], m_position[2]);
+			GL.glDisable(GL.GL_LIGHTING);
+			GL.glTranslatef(this.X, this.Y, this.Z);
 			GLUT.glutSolidSphere(1, 16, 16);
 
 			GL.glPopMatrix();

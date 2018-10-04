@@ -57,6 +57,7 @@
       <DependentUpon>MainWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Graphics\Skyscraper.cs" />
+    <Compile Include="Logics\ShadowMatrixGenerator.cs" />
     <Compile Include="MathEX\Matrix.cs" />
     <Compile Include="MathEX\Vector.cs" />
     <Compile Include="MilkShape\Character.cs" />
@@ -80,7 +81,9 @@
       <DependentUpon>MainWindow.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\environment_back.bmp" />
     <Content Include="Resources\environment_bottom.bmp" />

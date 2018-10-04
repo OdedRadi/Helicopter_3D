@@ -7,6 +7,8 @@ namespace Graphics
 {
 	class Scene
 	{
+		private static Scene m_instace;
+
 		private const double m_maxFovyAngle = 90;
 		private const double m_minFovyAngle = 45;
 		private double m_fovyAngle = 75;
@@ -33,11 +35,8 @@ namespace Graphics
 		private Skyscraper m_skyscraper = new Skyscraper();
 		private Light m_light = new Light();
 
-		public Scene(Size sceneSize, uint sceneWindowId)
+		private Scene()
 		{
-			m_width = sceneSize.Width;
-			m_height = sceneSize.Height;
-			InitializeGL(sceneWindowId);
 		}
 
 		~Scene()
@@ -45,7 +44,25 @@ namespace Graphics
 			WGL.wglDeleteContext(m_uint_RC);
 		}
 
+		public static Scene GetInstance()
+		{
+			if (m_instace == null)
+			{
+				m_instace = new Scene();
+			}
+
+			return m_instace;
+		}
+
 		#region init functions
+
+		public void Init(Size sceneSize, uint sceneWindowId)
+		{
+			m_width = sceneSize.Width;
+			m_height = sceneSize.Height;
+			InitializeGL(sceneWindowId);
+		}
+
 		private void InitializeGL(uint sceneWindowId)
 		{
 			m_uint_DC = WGL.GetDC(sceneWindowId);
@@ -62,7 +79,7 @@ namespace Graphics
 			m_helicopter.Init();
 			m_skyBox.Init();
 			m_skyscraper.Init();
-			m_light.Init();
+			m_light.Init(0, 5, 10, 5);
 		}
 
 		private void initPixelFormat()
@@ -132,6 +149,10 @@ namespace Graphics
 		}
 		#endregion
 
+		public float xTranslate { get { return m_xTranslate; } }
+		public float yTranslate { get { return m_yTranslate; } }
+		public float zTranslate { get { return m_zTranslate; } }
+
 		public void Draw()
 		{
 			if (m_uint_DC == 0 || m_uint_RC == 0)
@@ -144,19 +165,28 @@ namespace Graphics
 			checkSticksState();
 
 			// the world is moving (the helicopter always on 0,0,0), its looks like the helicopter is moving
-			GL.glRotatef(m_yRotate, 0, 1, 0);			
+			GL.glRotatef(m_yRotate, 0, 1, 0);
 			GL.glTranslatef(m_xTranslate, m_yTranslate, m_zTranslate);
+
+			m_light.SetEnable(true);
 			drawReflectedScene();
 			m_skyscraper.Draw();
 
+			m_light.DrawLightSource();
+
 			// the skybox always keep the same distance from the helicopter, so it is not affected by translation
+			m_skyscraper.BeginFloorStencil();
 			GL.glTranslatef(-m_xTranslate, -m_yTranslate, -m_zTranslate);
-			m_skyBox.Draw();
+			drawShadows();
+			m_skyscraper.StopFloorStencil();
+
+			m_skyBox.Draw(); 
 
 			// the helicopter is not affected by translation or rotation (first person view)
 			GL.glRotatef(m_yRotate, 0, -1, 0);
-			m_helicopter.Draw(); 
-			
+			m_helicopter.Draw();
+
+
 			GL.glFlush();
 			WGL.wglSwapBuffers(m_uint_DC);
 		}
@@ -175,11 +205,64 @@ namespace Graphics
 				GL.glTranslatef(-m_xTranslate, -m_yTranslate, -m_zTranslate); // the real helicopter is always at 0,0,0, so we go back to 0,0,0
 				GL.glRotatef(m_yRotate, 0, -1, 0); // to enable reflcted helicopter rotating
 				m_helicopter.Draw();
+
+				// drawing shadows reflections, moving to the skyscraper origins to set correct floor stencil
+				GL.glRotatef(m_yRotate, 0, 1, 0);
+				GL.glTranslatef(m_xTranslate, m_yTranslate, m_zTranslate);
+				m_skyscraper.BeginReflectedFloorStencil();
+				GL.glTranslatef(-m_xTranslate, -m_yTranslate, -m_zTranslate);
+
+				drawShadows();
 			}
 
 			GL.glPopMatrix();
 
 			m_skyscraper.StopDrawReflection();
+		}
+
+		private void drawShadows()
+		{
+			GL.glDisable(GL.GL_LIGHTING);
+
+			GL.glPushMatrix();
+
+			GL.glColor3f(0.15f, 0.15f, 0.15f);
+
+			// setting floor stencil
+			GL.glPushMatrix();
+			GL.glTranslatef(m_xTranslate, m_yTranslate, m_zTranslate);
+			//m_skyscraper.BeginFloorStencil();
+			GL.glPopMatrix();
+
+			// creating floor shadow matrix
+			float[] lightPos = new float[4];
+
+			lightPos[0] = m_light.X + m_xTranslate;
+			lightPos[1] = m_light.Y + m_yTranslate;
+			lightPos[2] = m_light.Z + m_zTranslate;
+			lightPos[3] = 1;
+
+			float[] mat = m_skyscraper.GetFloorShadowMatrix(lightPos);
+			
+			GL.glTranslatef(0, 0.01f, 0);
+			GL.glMultMatrixf(mat);
+
+			// drawing helicopter shadow
+			GL.glPushMatrix();
+			GL.glRotatef(m_yRotate, 0, -1, 0);
+			m_helicopter.DrawShadow();
+			GL.glPopMatrix();
+
+			// drawing skyscraper shadow
+			GL.glPushMatrix();
+			GL.glTranslatef(m_xTranslate, m_yTranslate, m_zTranslate);
+			m_skyscraper.DrawShadow();
+			GL.glPopMatrix();
+
+			//m_skyscraper.StopFloorStencil();
+			GL.glPopMatrix();
+
+			GL.glEnable(GL.GL_LIGHTING);
 		}
 
 		public void ChangeLookDistance(eLookDistance lookDistance)
@@ -279,7 +362,7 @@ namespace Graphics
 		}
 		#endregion
 		
-		private void drawAxes()
+		public void drawAxes()
 		{
 			GL.glBegin(GL.GL_LINES);
 			//x  RED

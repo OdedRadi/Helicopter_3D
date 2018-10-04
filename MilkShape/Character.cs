@@ -87,11 +87,11 @@ namespace Milkshape
             for (int i = 0; i < model_data.numMeshes; i++)
             {
                 int materialIndex = model_data.Meshes[i].materialIndex;
-                //3D model b6
-                //instead
-                //materialIndex = (int)model_data.Materials[model_data.numMaterials - 1].texture - 1;
-                //3D model e
-                BindMaterial(materialIndex);
+				//3D model b6
+				//instead
+				//materialIndex = (int)model_data.Materials[model_data.numMaterials - 1].texture - 1;
+				//3D model e
+				BindMaterial(materialIndex);
 
                 GL.glBegin(GL.GL_TRIANGLES);
                 for (int j = 0; j < model_data.Meshes[i].numTriangles; j++)
@@ -126,6 +126,37 @@ namespace Milkshape
 
             GL.glPopAttrib();
         }
+
+		public void DrawSolidModel()
+		{
+			GL.glBegin(GL.GL_TRIANGLES);
+			for (int i = 0; i < model_data.numMeshes; i++)
+			{
+				for (int j = 0; j < model_data.Meshes[i].numTriangles; j++)
+				{
+					int triangleIndex = model_data.Meshes[i].TriangleIndices[j];
+					Triangle pTri = model_data.Triangles[triangleIndex];
+
+					for (int k = 0; k < 3; k++)
+					{
+						int index = pTri.vertexIndices[k];
+
+						/*int scalar = (k * 3);
+						float[] norm = new float[3] { pTri.vertexNormals[0 + scalar], pTri.vertexNormals[1 + scalar], pTri.vertexNormals[2 + scalar] };
+
+						Vector newNormal = new Vector(norm);
+						newNormal.Normalize();
+						GL.glNormal3fv(newNormal.GetVector);*/
+
+						Vector newVertex = new Vector(model_data.Vertices[index].location);
+						GL.glVertex3fv(newVertex.GetVector);
+					}
+				}
+
+			}
+			
+			GL.glEnd();
+		}
 
         #region Animation
         /// Plays an animation which was defined in your .txt config file.

@@ -94,6 +94,41 @@ namespace Graphics
 			m_heliMainRotor.DrawModel();
 			GL.glPopMatrix();
 		}
+		
+		public void DrawShadow()
+		{
+			GL.glPushMatrix();
+
+			GL.glScalef(0.07f, 0.07f, -0.07f);
+
+			rotateAccordingToDirectionStick();
+
+			m_heliBody.DrawSolidModel();
+			drawMainRotorShadow();
+			drawSmallRotorShadow();
+			
+			GL.glPopMatrix();
+		}
+
+		private void drawMainRotorShadow()
+		{
+			GL.glPushMatrix();
+			GL.glTranslated(m_mainRotorXTranslate, 0, m_mainRotorZTranslate);
+			GL.glRotatef(m_mainRotateAngle, 0, -1, 0);
+			GL.glTranslated(-m_mainRotorXTranslate, 0, -m_mainRotorZTranslate);
+			m_heliMainRotor.DrawSolidModel();
+			GL.glPopMatrix();
+		}
+
+		private void drawSmallRotorShadow()
+		{
+			GL.glPushMatrix();
+			GL.glTranslated(0, m_smallRotorYTranslate, m_smallRotorZTranslate);
+			GL.glRotatef(m_smallRotorAngle, 1, 0, 0);
+			GL.glTranslated(0, -m_smallRotorYTranslate, -m_smallRotorZTranslate);
+			m_heliSmallRotor.DrawSolidModel();
+			GL.glPopMatrix();
+		}
 
 		private void rotateAccordingToDirectionStick()
 		{
