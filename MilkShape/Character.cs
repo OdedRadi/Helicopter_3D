@@ -141,12 +141,12 @@ namespace Milkshape
 					{
 						int index = pTri.vertexIndices[k];
 
-						/*int scalar = (k * 3);
+						int scalar = (k * 3);
 						float[] norm = new float[3] { pTri.vertexNormals[0 + scalar], pTri.vertexNormals[1 + scalar], pTri.vertexNormals[2 + scalar] };
 
 						Vector newNormal = new Vector(norm);
 						newNormal.Normalize();
-						GL.glNormal3fv(newNormal.GetVector);*/
+						GL.glNormal3fv(newNormal.GetVector);
 
 						Vector newVertex = new Vector(model_data.Vertices[index].location);
 						GL.glVertex3fv(newVertex.GetVector);
