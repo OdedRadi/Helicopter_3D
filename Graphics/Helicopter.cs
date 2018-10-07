@@ -4,7 +4,7 @@ using OpenGL;
 
 namespace Graphics
 {
-	public class Helicopter : IGraphicComponent
+	public class Helicopter : IShadowingGraphicComponent
 	{
 		private uint m_heliTexture;
 		private Character m_heliBody = new Character("../../Resources/HeliBody.ms3d");

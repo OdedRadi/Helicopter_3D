@@ -54,7 +54,7 @@ namespace Graphics
 			return m_instace;
 		}
 
-		#region init functions
+		#region init methods
 
 		public void Init(Size sceneSize, uint sceneWindowId)
 		{
@@ -79,7 +79,7 @@ namespace Graphics
 			m_helicopter.Init();
 			m_skyBox.Init();
 			m_skyscraper.Init();
-			m_light.Init(0, -10, 20, 5);
+			m_light.Init(0, -10, 50, 5);
 		}
 
 		private void initPixelFormat()
@@ -163,13 +163,13 @@ namespace Graphics
 			GL.glTranslated(0, 0, -5);
 			
 			checkSticksState();
+			m_light.SetEnable(true);
+			drawReflectedScene();
 
 			// the world is moving (the helicopter always on 0,0,0), its looks like the helicopter is moving
 			GL.glRotatef(m_yRotate, 0, 1, 0);
 			GL.glTranslatef(m_xTranslate, m_yTranslate, m_zTranslate);
 
-			m_light.SetEnable(true);
-			drawReflectedScene();
 			m_skyscraper.Draw();
 
 			m_light.DrawLightSource();
@@ -190,140 +190,84 @@ namespace Graphics
 
 		private void drawReflectedScene()
 		{
-			m_skyscraper.BeginStencil(Skyscraper.eStencils.Reflection);
-
-			GL.glPushMatrix();
-			GL.glScalef(1, 1, -1);
-
-			m_skyBox.Draw();
-
-			if (m_zTranslate < -1) // the helicopter drawing only on the front wall of the skyscraper
-			{
-				GL.glTranslatef(-m_xTranslate, -m_yTranslate, -m_zTranslate); // the real helicopter is always at 0,0,0, so we go back to 0,0,0
-				GL.glRotatef(m_yRotate, 0, -1, 0); // to enable reflcted helicopter rotating
-				m_helicopter.Draw();
-
-				// drawing shadows reflections, moving to the skyscraper origins to set correct reflected floor stencil
-				GL.glRotatef(m_yRotate, 0, 1, 0);
-				GL.glTranslatef(m_xTranslate, m_yTranslate, m_zTranslate);
-				m_skyscraper.BeginReflectedFloorStencil();
-				GL.glTranslatef(-m_xTranslate, -m_yTranslate, -m_zTranslate);
-
-				drawFloorShadows();
-			}
-
-			GL.glPopMatrix();
-
-			m_skyscraper.StopStencil();
+			drawSkyboxReflection();
+			drawHelicopterReflection();
 		}
 
-
-		private void drawShadows()
+		private void drawHelicopterReflection()
 		{
 			GL.glPushMatrix();
-			GL.glDisable(GL.GL_LIGHTING);
-			GL.glColor3f(0.15f, 0.15f, 0.15f);
 
 			// move to skyscraper origins
 			GL.glRotatef(m_yRotate, 0, 1, 0);
 			GL.glTranslatef(m_xTranslate, m_yTranslate, m_zTranslate);
 
-			// walls shadows
-			drawWallsShadows();
+			// get helicopter drawing trasnlation
+			float[] drawingTranslation = new float[3];
 
-			// floor shadow
-			m_skyscraper.BeginStencil(Skyscraper.eStencils.Floor);
-			GL.glTranslatef(-m_xTranslate, -m_yTranslate, -m_zTranslate);
-			drawFloorShadows();
-			m_skyscraper.StopStencil();
+			drawingTranslation[0] = -m_xTranslate;
+			drawingTranslation[1] = -m_yTranslate;
+			drawingTranslation[2] = -m_zTranslate;
 
-			GL.glEnable(GL.GL_LIGHTING);
-			GL.glPopMatrix();
-		}
+			// get helicopter drawing rotating
+			float[] drawingRotation = new float[3];
 
-		private void drawWallsShadows()
-		{
-			float[] lightPos = new float[4];
+			drawingRotation[0] = 0;
+			drawingRotation[1] = -m_yRotate;
+			drawingRotation[2] = 0;
 
-			lightPos[0] = m_light.X;
-			lightPos[1] = m_light.Y;
-			lightPos[2] = m_light.Z;
-			lightPos[3] = 1;
-
-			float[] matrix = null;
-
-			// back wall shadow
-			m_skyscraper.BeginStencil(Skyscraper.eStencils.BackWall);
-			matrix = m_skyscraper.GetShadowMatrix(Skyscraper.eShadowMatrices.BackWall, lightPos);
-
-			GL.glPushMatrix();
-			GL.glTranslatef(0, 0, -0.01f);
-			multiplyMatrixAndDrawHelicotperShadow(matrix);
-			GL.glPopMatrix();
-
-			// left wall shadow
-			m_skyscraper.BeginStencil(Skyscraper.eStencils.LeftWall);
-			matrix = m_skyscraper.GetShadowMatrix(Skyscraper.eShadowMatrices.LeftWall, lightPos);
-
-			GL.glPushMatrix();
-			GL.glTranslatef(-0.01f, 0, 0);
-			multiplyMatrixAndDrawHelicotperShadow(matrix);
-			GL.glPopMatrix();
-
-			// right wall shadow
-			m_skyscraper.BeginStencil(Skyscraper.eStencils.RightWall);
-			matrix = m_skyscraper.GetShadowMatrix(Skyscraper.eShadowMatrices.RightWall, lightPos);
-
-			GL.glPushMatrix();
-			GL.glTranslatef(0.01f, 0, 0);
-			multiplyMatrixAndDrawHelicotperShadow(matrix);
-			GL.glPopMatrix();
-
-			// disable stencil
-			m_skyscraper.StopStencil();
-		}
-
-		private void multiplyMatrixAndDrawHelicotperShadow(float[] matrix)
-		{
-			GL.glMultMatrixf(matrix);
-			GL.glTranslatef(-m_xTranslate, -m_yTranslate, -m_zTranslate);
-			GL.glRotatef(m_yRotate, 0, -1, 0);
-			m_helicopter.DrawShadow();
-		}
-
-		private void drawFloorShadows()
-		{
-			GL.glPushMatrix();
-			GL.glDisable(GL.GL_LIGHTING);
-
-			GL.glColor3f(0.15f, 0.15f, 0.15f);
-
-			// creating floor shadow matrix
-			float[] lightPos = new float[4];
-
-			lightPos[0] = m_light.X + m_xTranslate;
-			lightPos[1] = m_light.Y + m_yTranslate;
-			lightPos[2] = m_light.Z + m_zTranslate;
-			lightPos[3] = 1;
-
-			float[] mat = m_skyscraper.GetShadowMatrix(Skyscraper.eShadowMatrices.Floor, lightPos);
+			m_skyscraper.DrawReflection(m_helicopter, drawingTranslation, drawingRotation, m_light.Position);
 			
-			GL.glTranslatef(0, 0.01f, 0);
-			GL.glMultMatrixf(mat);
-
-			// drawing helicopter shadow
-			GL.glPushMatrix();
-			GL.glRotatef(m_yRotate, 0, -1, 0);
-			m_helicopter.DrawShadow();
 			GL.glPopMatrix();
+		}
 
-			// drawing skyscraper shadow
+		private void drawSkyboxReflection()
+		{
 			GL.glPushMatrix();
+
+			// move to skyscraper origins
+			GL.glRotatef(m_yRotate, 0, 1, 0);
 			GL.glTranslatef(m_xTranslate, m_yTranslate, m_zTranslate);
-			m_skyscraper.DrawShadow();
-			GL.glPopMatrix();
 			
-			GL.glEnable(GL.GL_LIGHTING);
+			// get skybox drawing trasnlation
+			float[] drawingTranslation = new float[3];
+
+			drawingTranslation[0] = -m_xTranslate;
+			drawingTranslation[1] = -m_yTranslate;
+			drawingTranslation[2] = -m_zTranslate;
+
+			// skybox not affected by rotation
+			float[] drawingRotation = new float[3] { 0, 0, 0 };
+
+			m_skyscraper.DrawReflection(m_skyBox, drawingTranslation, drawingRotation, m_light.Position);
+			
+			GL.glPopMatrix();
+		}
+
+		private void drawShadows()
+		{
+			GL.glPushMatrix();
+
+			// move to skyscraper origins
+			GL.glRotatef(m_yRotate, 0, 1, 0);
+			GL.glTranslatef(m_xTranslate, m_yTranslate, m_zTranslate);
+
+			// get helicopter drawing trasnlation
+			float[] drawingTranslation = new float[3];
+
+			drawingTranslation[0] = -m_xTranslate;
+			drawingTranslation[1] = -m_yTranslate;
+			drawingTranslation[2] = -m_zTranslate;
+
+			// get helicopter drawing rotating
+			float[] drawingRotation = new float[3];
+
+			drawingRotation[0] = 0;
+			drawingRotation[1] = -m_yRotate;
+			drawingRotation[2] = 0;
+
+			m_skyscraper.DrawComponentShadows(m_light.Position, m_helicopter, drawingTranslation, drawingRotation);
+			
 			GL.glPopMatrix();
 		}
 

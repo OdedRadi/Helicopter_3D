@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Graphics\eLookDistance.cs" />
+    <Compile Include="Graphics\IShadowingGraphicComponent.cs" />
     <Compile Include="Logics\SceneEngine.cs" />
     <Compile Include="Graphics\eDirectionStick.cs" />
     <Compile Include="Graphics\eThrottleStick.cs" />

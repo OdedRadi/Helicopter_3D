@@ -17,6 +17,7 @@ namespace Graphics
 		public float X { get; private set; }
 		public float Y { get; private set; }
 		public float Z { get; private set; }
+		public float[] Position { get { return new float[] { X, Y, Z, 1 }; } }
 
 		public void SetEnable(bool enable)
 		{
