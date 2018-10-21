@@ -1,5 +1,4 @@
-﻿using System;
-using Logics;
+﻿using Logics;
 using OpenGL;
 
 namespace Graphics
@@ -12,20 +11,28 @@ namespace Graphics
 			ReflectedFloor,
 			Floor,
 			Roof,
-			FrontWall,
-			BackWall,
-			LeftWall,
-			RightWall
+			UpperFrontWall,
+			UpperBackWall,
+			UpperLeftWall,
+			UpperRightWall,
+			BottomFrontWall,
+			BottomBackWall,
+			BottomLeftWall,
+			BottomRightWall
 		}
 
 		private enum eShadowMatrices
 		{
 			Floor,
 			Roof,
-			FrontWall,
-			BackWall,
-			LeftWall,
-			RightWall
+			UpperFrontWall,
+			UpperBackWall,
+			UpperLeftWall,
+			UpperRightWall,
+			BottomFrontWall,
+			BottomBackWall,
+			BottomLeftWall,
+			BottomRightWall
 		}
 
 		private uint m_wallsTexture = 0;
@@ -40,7 +47,7 @@ namespace Graphics
 		private const float m_width = m_windowsInFloor * m_windowWidth + m_windowsDistance * m_windowsInFloor;
 		private const float m_height = m_floors * m_windowHeight + m_windowsDistance * m_floors;
 
-		private const float m_floorWidth = 20;
+		private const float m_floorWidth = 40;
 
 		#region init methods
 		public void Init()
@@ -136,7 +143,9 @@ namespace Graphics
 		{
 			GL.glPushMatrix();
 
-			GL.glTranslatef(m_width / 2.0f, 0, -m_width / 2.0f);
+			GL.glTranslatef(m_width / 2, 0, -m_width / 2);
+			GL.glTranslatef(-m_floorWidth / 2, 0, m_floorWidth / 2);
+
 			GL.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, (int)GL.GL_REPEAT);
 			GL.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, (int)GL.GL_REPEAT);
 			GL.glEnable(GL.GL_TEXTURE_2D);
@@ -145,10 +154,10 @@ namespace Graphics
 			GL.glBegin(GL.GL_QUADS);
 			GL.glNormal3f(0, 1, 0);
 
-			GL.glTexCoord2f(0.0f, 0.0f); GL.glVertex3f(-m_floorWidth, 0, -m_floorWidth);
-			GL.glTexCoord2f(m_floorWidth / 2, 0.0f); GL.glVertex3f(m_floorWidth, 0, -(m_floorWidth));
-			GL.glTexCoord2f(m_floorWidth / 2, m_floorWidth / 2); GL.glVertex3f(m_floorWidth, 0, m_floorWidth);
-			GL.glTexCoord2f(0.0f, m_floorWidth / 2); GL.glVertex3f(-m_floorWidth, 0, m_floorWidth);
+			GL.glTexCoord2f(0, 0);   GL.glVertex3f(0, 0, 0);
+			GL.glTexCoord2f(10, 0);  GL.glVertex3f(m_floorWidth, 0, 0);
+			GL.glTexCoord2f(10, 10); GL.glVertex3f(m_floorWidth, 0, -m_floorWidth);
+			GL.glTexCoord2f(0, 10);  GL.glVertex3f(0, 0, -m_floorWidth);
 
 			GL.glEnd();
 			GL.glDisable(GL.GL_TEXTURE_2D);
@@ -161,25 +170,25 @@ namespace Graphics
 			GL.glPushMatrix();
 
 			GL.glTranslatef(m_width / 2.0f, 0, -m_width / 2.0f);
-			GL.glTranslatef(-m_floorWidth, 0, m_floorWidth);
+			GL.glTranslatef(-m_floorWidth / 2, 0, m_floorWidth / 2);
 
 			// front wall
-			drawWall(m_floorWidth * 2, -100);
+			drawWall(m_floorWidth, -100);
 
 			// left wall
 			GL.glRotatef(90, 0, 1, 0);
-			drawWall(m_floorWidth * 2, -100);
+			drawWall(m_floorWidth, -100);
 
 			// right wall
 			GL.glRotatef(-90, 0, 1, 0);
-			GL.glTranslatef(m_floorWidth * 2, 0, 0);
+			GL.glTranslatef(m_floorWidth, 0, 0);
 			GL.glRotatef(90, 0, 1, 0);
-			drawWall(m_floorWidth * 2, -100);
+			drawWall(m_floorWidth, -100);
 
 			// back wall
-			GL.glTranslatef(m_floorWidth * 2, 0, 0);
+			GL.glTranslatef(m_floorWidth, 0, 0);
 			GL.glRotatef(90, 0, 1, 0);
-			drawWall(m_floorWidth * 2, -100);
+			drawWall(m_floorWidth, -100);
 
 			GL.glPopMatrix();
 		}
@@ -215,34 +224,34 @@ namespace Graphics
 			GL.glPushMatrix();
 
 			// front wall
-			drawSolidWall();
+			drawSolidWall(m_width, m_height);
 
 			// left wall
 			GL.glRotatef(90, 0, 1, 0);
 			GL.glTranslatef(0, 0.1f, 0);
-			drawSolidWall();
+			drawSolidWall(m_width, m_height);
 
 			// right wall
 			GL.glRotatef(-90, 0, 1, 0);
 			GL.glTranslatef(m_width, 0, 0);
 			GL.glRotatef(90, 0, 1, 0);
-			drawSolidWall();
+			drawSolidWall(m_width, m_height);
 
 			// back wall
 			GL.glTranslatef(m_width, 0, 0);
 			GL.glRotatef(90, 0, 1, 0);
-			drawSolidWall();
+			drawSolidWall(m_width, m_height);
 
 			GL.glPopMatrix();
 		}
 
-		private void drawSolidWall()
+		private void drawSolidWall(float width, float height)
 		{
 			GL.glBegin(GL.GL_QUADS);
 			GL.glVertex3f(0, 0, 0);
-			GL.glVertex3f(m_width, 0, 0);
-			GL.glVertex3f(m_width, m_height, 0);
-			GL.glVertex3f(0, m_height, 0);
+			GL.glVertex3f(width, 0, 0);
+			GL.glVertex3f(width, height, 0);
+			GL.glVertex3f(0, height, 0);
 			GL.glEnd();
 		}
 
@@ -364,7 +373,7 @@ namespace Graphics
 		}
 		#endregion
 
-		#region component shadows drawing
+		#region components shadows drawing
 		public void DrawComponentShadows(float[] lightPosition, IShadowingGraphicComponent component, float[] drawingTranslation, float[] drawingRotation)
 		{
 			GL.glDisable(GL.GL_LIGHTING);
@@ -392,33 +401,69 @@ namespace Graphics
 
 			GL.glColor3f(0.20f, 0.20f, 0.20f);
 
-			// back wall shadow
-			beginStencil(eStencils.BackWall);
-			matrix = getShadowMatrix(eShadowMatrices.BackWall, lightPosition);
+			// upper back wall shadow
+			beginStencil(eStencils.UpperBackWall);
+			matrix = getShadowMatrix(eShadowMatrices.UpperBackWall, lightPosition);
 
 			GL.glPushMatrix();
 			GL.glTranslatef(0, 0, -0.01f);
 			multiplyMatrixAndDrawComponentShadow(matrix, component, drawingTranslation, drawingRotation);
 			GL.glPopMatrix();
 
-			// left wall shadow
-			beginStencil(eStencils.LeftWall);
-			matrix = getShadowMatrix(eShadowMatrices.LeftWall, lightPosition);
+			// upper left wall shadow
+			beginStencil(eStencils.UpperLeftWall);
+			matrix = getShadowMatrix(eShadowMatrices.UpperLeftWall, lightPosition);
 
 			GL.glPushMatrix();
 			GL.glTranslatef(-0.01f, 0, 0);
 			multiplyMatrixAndDrawComponentShadow(matrix, component, drawingTranslation, drawingRotation);
 			GL.glPopMatrix();
 
-			// right wall shadow
-			beginStencil(eStencils.RightWall);
-			matrix = getShadowMatrix(eShadowMatrices.RightWall, lightPosition);
+			// upper right wall shadow
+			beginStencil(eStencils.UpperRightWall);
+			matrix = getShadowMatrix(eShadowMatrices.UpperRightWall, lightPosition);
 
 			GL.glPushMatrix();
 			GL.glTranslatef(0.01f, 0, 0);
 			multiplyMatrixAndDrawComponentShadow(matrix, component, drawingTranslation, drawingRotation);
 			GL.glPopMatrix();
 
+			// bottom front wall shadow
+			beginStencil(eStencils.BottomFrontWall);
+			matrix = getShadowMatrix(eShadowMatrices.BottomFrontWall, lightPosition);
+
+			GL.glPushMatrix();
+			GL.glTranslatef(0, 0, 0.01f);
+			multiplyMatrixAndDrawComponentShadow(matrix, component, drawingTranslation, drawingRotation);
+			GL.glPopMatrix();
+			
+			// bottom back wall shadow
+			beginStencil(eStencils.BottomBackWall);
+			matrix = getShadowMatrix(eShadowMatrices.BottomBackWall, lightPosition);
+
+			GL.glPushMatrix();
+			GL.glTranslatef(0, 0, -0.01f);
+			multiplyMatrixAndDrawComponentShadow(matrix, component, drawingTranslation, drawingRotation);
+			GL.glPopMatrix();
+
+			// bottom left wall shadow
+			beginStencil(eStencils.BottomLeftWall);
+			matrix = getShadowMatrix(eShadowMatrices.BottomLeftWall, lightPosition);
+
+			GL.glPushMatrix();
+			GL.glTranslatef(-0.01f, 0, 0);
+			multiplyMatrixAndDrawComponentShadow(matrix, component, drawingTranslation, drawingRotation);
+			GL.glPopMatrix();
+
+			// bottom right wall shadow
+			beginStencil(eStencils.BottomRightWall);
+			matrix = getShadowMatrix(eShadowMatrices.BottomRightWall, lightPosition);
+
+			GL.glPushMatrix();
+			GL.glTranslatef(0.01f, 0, 0);
+			multiplyMatrixAndDrawComponentShadow(matrix, component, drawingTranslation, drawingRotation);
+			GL.glPopMatrix();
+			
 			// disable stencil
 			stopStencil();
 
@@ -440,20 +485,36 @@ namespace Graphics
 					pointOnThePlane = new float[] { 0, m_height, 0 };
 					normal = new float[] { 0, 1, 0 };
 					break;
-				case eShadowMatrices.FrontWall:
+				case eShadowMatrices.UpperFrontWall:
 					pointOnThePlane = new float[] { 0, 0, 0 };
 					normal = new float[] { 0, 0, 1 };
 					break;
-				case eShadowMatrices.BackWall:
+				case eShadowMatrices.UpperBackWall:
 					pointOnThePlane = new float[] { 0, 0, -m_width };
 					normal = new float[] { 0, 0, -1 };
 					break;
-				case eShadowMatrices.LeftWall:
+				case eShadowMatrices.UpperLeftWall:
 					pointOnThePlane = new float[] { 0, 0, 0 };
 					normal = new float[] { -1, 0, 0 };
 					break;
-				case eShadowMatrices.RightWall:
+				case eShadowMatrices.UpperRightWall:
 					pointOnThePlane = new float[] { m_width, 0, 0 };
+					normal = new float[] { 1, 0, 0 };
+					break;
+				case eShadowMatrices.BottomFrontWall:
+					pointOnThePlane = new float[] { 0, 0, -(m_width / 2) + (m_floorWidth / 2) };
+					normal = new float[] { 0, 0, 1 };
+					break;
+				case eShadowMatrices.BottomBackWall:
+					pointOnThePlane = new float[] { 0, 0, -(m_width / 2) - (m_floorWidth / 2) };
+					normal = new float[] { 0, 0, -1 };
+					break;
+				case eShadowMatrices.BottomLeftWall:
+					pointOnThePlane = new float[] { m_width / 2 - (m_floorWidth / 2), 0, 0 };
+					normal = new float[] { -1, 0, 0 };
+					break;
+				case eShadowMatrices.BottomRightWall:
+					pointOnThePlane = new float[] { m_width / 2 + (m_floorWidth / 2), 0, 0 };
 					normal = new float[] { 1, 0, 0 };
 					break;
 			}
@@ -496,21 +557,39 @@ namespace Graphics
 				case eStencils.Roof:
 					drawRoof();
 					break;
-				case eStencils.FrontWall:
-					drawSolidWall();
+				case eStencils.UpperFrontWall:
+					drawSolidWall(m_width, m_height);
 					break;
-				case eStencils.BackWall:
+				case eStencils.UpperBackWall:
 					GL.glTranslatef(0, 0, -m_width);
-					drawSolidWall();
+					drawSolidWall(m_width, m_height);
 					break;
-				case eStencils.LeftWall:
+				case eStencils.UpperLeftWall:
 					GL.glRotatef(90, 0, 1, 0);
-					drawSolidWall();
+					drawSolidWall(m_width, m_height);
 					break;
-				case eStencils.RightWall:
+				case eStencils.UpperRightWall:
 					GL.glTranslatef(m_width, 0, 0);
 					GL.glRotatef(90, 0, 1, 0);
-					drawSolidWall();
+					drawSolidWall(m_width, m_height);
+					break;
+				case eStencils.BottomFrontWall:
+					GL.glTranslatef(m_width / 2 - m_floorWidth / 2, 0, -(m_width / 2) + m_floorWidth / 2);
+					drawSolidWall(m_floorWidth, -100);
+					break;
+				case eStencils.BottomBackWall:
+					GL.glTranslatef(m_width / 2 - m_floorWidth / 2, 0, -(m_width / 2) - m_floorWidth / 2);
+					drawSolidWall(m_floorWidth, -100);
+					break;
+				case eStencils.BottomLeftWall:
+					GL.glTranslatef(m_width / 2 - m_floorWidth / 2, 0, -(m_width / 2) + m_floorWidth / 2);
+					GL.glRotatef(90, 0, 1, 0);
+					drawSolidWall(m_floorWidth, -100);
+					break;
+				case eStencils.BottomRightWall:
+					GL.glTranslatef(m_width / 2 + m_floorWidth / 2, 0, -(m_width / 2) + m_floorWidth / 2);
+					GL.glRotatef(90, 0, 1, 0);
+					drawSolidWall(m_floorWidth, -100);
 					break;
 			}
 
