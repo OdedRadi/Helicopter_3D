@@ -29,7 +29,7 @@ namespace Logics
 
 		public void Init(Size sceneSize, uint sceneWindowId)
 		{
-			m_scene = Scene.GetInstance();
+			m_scene = new Scene();
 			m_scene.Init(sceneSize, sceneWindowId);
 		}
 
@@ -173,6 +173,91 @@ namespace Logics
 			if (directionStickState != eDirectionStick.None)
 			{
 				m_scene.DirectionStickDeactivate(directionStickState);
+			}
+		}
+
+		public void LightSourceDrawingChanged(bool draw)
+		{
+			m_scene.LightSourceDrawing = draw;
+		}
+
+		public void LightPositionChanged(eAxis axis, float value)
+		{
+			switch (axis)
+			{
+				case eAxis.X:
+					m_scene.LightPositionX = value;
+					break;
+				case eAxis.Y:
+					m_scene.LightPositionY = value;
+					break;
+				case eAxis.Z:
+					m_scene.LightPositionZ = value;
+					break;
+			}
+		}
+
+		public void LookAtPositionChanged(eLookAtParam lookAtParam, eAxis axis, float value)
+		{
+			switch (lookAtParam)
+			{
+				case eLookAtParam.Eye:
+					setLookAtEyeValue(axis, value);
+					break;
+				case eLookAtParam.Center:
+					setLookAtCenterValue(axis, value);
+					break;
+				case eLookAtParam.Up:
+					setLookAtUpValue(axis, value);
+					break;
+			}
+		}
+
+		private void setLookAtEyeValue(eAxis axis, float value)
+		{
+			switch (axis)
+			{
+				case eAxis.X:
+					m_scene.LookAtEyeX = value;
+					break;
+				case eAxis.Y:
+					m_scene.LookAtEyeY = value;
+					break;
+				case eAxis.Z:
+					m_scene.LookAtEyeZ = value;
+					break;
+			}
+		}
+
+		private void setLookAtCenterValue(eAxis axis, float value)
+		{
+			switch (axis)
+			{
+				case eAxis.X:
+					m_scene.LookAtCenterX = value;
+					break;
+				case eAxis.Y:
+					m_scene.LookAtCenterY = value;
+					break;
+				case eAxis.Z:
+					m_scene.LookAtCenterZ = value;
+					break;
+			}
+		}
+
+		private void setLookAtUpValue(eAxis axis, float value)
+		{
+			switch (axis)
+			{
+				case eAxis.X:
+					m_scene.LookAtUpX = value;
+					break;
+				case eAxis.Y:
+					m_scene.LookAtUpY = value;
+					break;
+				case eAxis.Z:
+					m_scene.LookAtUpZ = value;
+					break;
 			}
 		}
 	}

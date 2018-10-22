@@ -1,5 +1,6 @@
 ﻿using Logics;
 using Forms;
+using System.Windows.Forms;
 
 namespace Helicopter
 {
@@ -7,11 +8,15 @@ namespace Helicopter
 	{
 		static void Main(string[] args)
 		{
+			Application.EnableVisualStyles();
+			Application.SetCompatibleTextRenderingDefault(false);
+
 			SceneEngine sceneEngine = new SceneEngine();
 			MainWindow mainWindow = new MainWindow(sceneEngine);
 
 			sceneEngine.Start();
-			mainWindow.ShowDialog();
+
+			Application.Run(mainWindow);
 		}
 	}
 }

@@ -595,13 +595,6 @@ namespace Graphics
 
 			endStencilBufferDrawing();
 
-			if (stencil == eStencils.ReflectedFloor)
-			{
-				// drawing only where both windows and floor area that is equal to 2
-				GL.glStencilFunc(GL.GL_EQUAL, 2, 0xFFFFFFFF);
-				GL.glStencilOp(GL.GL_KEEP, GL.GL_KEEP, GL.GL_KEEP);
-			}
-
 			GL.glPopMatrix();
 		}
 
@@ -612,13 +605,13 @@ namespace Graphics
 
 		private void drawReflectedFloorStencil()
 		{
-			// first drawing the windows area
+			// first drawing the windows area with value of 2
 			GL.glStencilOp(GL.GL_KEEP, GL.GL_KEEP, GL.GL_REPLACE);
-			GL.glStencilFunc(GL.GL_ALWAYS, 1, 0xFFFFFFFF);
+			GL.glStencilFunc(GL.GL_ALWAYS, 2, 0xFFFFFFFF);
 			drawWindows();
 
-			// then increment the floor area, so where is windows and floor togther will be 2
-			GL.glStencilOp(GL.GL_KEEP, GL.GL_KEEP, GL.GL_INCR);
+			// then decrment the floor area by 1, so where is windows and floor togther will be 1
+			GL.glStencilOp(GL.GL_KEEP, GL.GL_KEEP, GL.GL_DECR);
 			GL.glStencilFunc(GL.GL_ALWAYS, 1, 0xFFFFFFFF);
 			drawFloor();
 		}

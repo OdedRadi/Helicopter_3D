@@ -41,8 +41,22 @@
     <None Include="Resources\HeliSmallRotor.ms3d" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Forms\LightForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\LightForm.Designer.cs">
+      <DependentUpon>LightForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\LookAtForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\LookAtForm.Designer.cs">
+      <DependentUpon>LookAtForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Graphics\eLookDistance.cs" />
     <Compile Include="Graphics\IShadowingGraphicComponent.cs" />
+    <Compile Include="Graphics\eAxis.cs" />
+    <Compile Include="Graphics\eLookAtParam.cs" />
     <Compile Include="Logics\SceneEngine.cs" />
     <Compile Include="Graphics\eDirectionStick.cs" />
     <Compile Include="Graphics\eThrottleStick.cs" />
@@ -76,8 +90,15 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Forms\LightForm.resx">
+      <DependentUpon>LightForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\LookAtForm.resx">
+      <DependentUpon>LookAtForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\MainWindow.resx">
       <DependentUpon>MainWindow.cs</DependentUpon>
     </EmbeddedResource>

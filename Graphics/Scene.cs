@@ -7,8 +7,6 @@ namespace Graphics
 {
 	class Scene
 	{
-		private static Scene m_instace;
-
 		private const double m_maxFovyAngle = 90;
 		private const double m_minFovyAngle = 45;
 		private double m_fovyAngle = 75;
@@ -33,9 +31,9 @@ namespace Graphics
 		private SkyBox m_skyBox = new SkyBox();
 		private Helicopter m_helicopter = new Helicopter();
 		private Skyscraper m_skyscraper = new Skyscraper();
-		private Light m_light = new Light();
+		private Light m_light = new Light(0);
 
-		private Scene()
+		public Scene()
 		{
 		}
 
@@ -44,15 +42,24 @@ namespace Graphics
 			WGL.wglDeleteContext(m_uint_RC);
 		}
 
-		public static Scene GetInstance()
-		{
-			if (m_instace == null)
-			{
-				m_instace = new Scene();
-			}
+		#region properties
 
-			return m_instace;
-		}
+		public bool LightSourceDrawing { private get; set; }
+		public float LightPositionX { private get; set; }
+		public float LightPositionY { private get; set; }
+		public float LightPositionZ { private get; set; }
+
+		public float LookAtEyeX { private get; set; }
+		public float LookAtEyeY { private get; set; }
+		public float LookAtEyeZ { private get; set; }
+		public float LookAtCenterX { private get; set; }
+		public float LookAtCenterY { private get; set; }
+		public float LookAtCenterZ { private get; set; }
+		public float LookAtUpX { private get; set; }
+		public float LookAtUpY { private get; set; }
+		public float LookAtUpZ { private get; set; }
+
+		#endregion
 
 		#region init methods
 
@@ -79,7 +86,6 @@ namespace Graphics
 			m_helicopter.Init();
 			m_skyBox.Init();
 			m_skyscraper.Init();
-			m_light.Init(0, -10, 50, 5);
 		}
 
 		private void initPixelFormat()
@@ -149,10 +155,6 @@ namespace Graphics
 		}
 		#endregion
 
-		public float xTranslate { get { return m_xTranslate; } }
-		public float yTranslate { get { return m_yTranslate; } }
-		public float zTranslate { get { return m_zTranslate; } }
-
 		public void Draw()
 		{
 			if (m_uint_DC == 0 || m_uint_RC == 0)
@@ -161,9 +163,16 @@ namespace Graphics
 			GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT | GL.GL_STENCIL_BUFFER_BIT);
 			GL.glLoadIdentity();
 			GL.glTranslated(0, 0, -5);
-			
+
+			m_light.SetPosition(LightPositionX, LightPositionY, LightPositionZ);
+
+			GLU.gluLookAt(
+				LookAtEyeX, LookAtEyeY, LookAtEyeZ, 
+				LookAtCenterX, LookAtCenterY, LookAtCenterZ, 
+				LookAtUpX, LookAtUpY, LookAtUpZ);
+
 			checkSticksState();
-			m_light.SetEnable(true);
+			enableLightning();
 			drawReflectedScene();
 
 			// the world is moving (the helicopter always on 0,0,0), its looks like the helicopter is moving
@@ -171,8 +180,6 @@ namespace Graphics
 			GL.glTranslatef(m_xTranslate, m_yTranslate, m_zTranslate);
 
 			m_skyscraper.Draw();
-
-			m_light.DrawLightSource();
 
 			// the skybox always keep the same distance from the helicopter, so it is not affected by translation
 			GL.glTranslatef(-m_xTranslate, -m_yTranslate, -m_zTranslate);
@@ -188,10 +195,30 @@ namespace Graphics
 			WGL.wglSwapBuffers(m_uint_DC);
 		}
 
+		private void enableLightning()
+		{
+			GL.glPushMatrix();
+
+			GL.glRotatef(m_yRotate, 0, 1, 0);
+			m_light.SetEnable(true);
+
+			if (LightSourceDrawing)
+			{
+				GL.glTranslatef(m_xTranslate, m_yTranslate, m_zTranslate);
+				m_light.DrawLightSource();
+			}
+
+			GL.glPopMatrix();
+		}
+
 		private void drawReflectedScene()
 		{
 			drawSkyboxReflection();
-			drawHelicopterReflection();
+
+			if (m_zTranslate < -1)
+			{
+				drawHelicopterReflection();
+			}
 		}
 
 		private void drawHelicopterReflection()
