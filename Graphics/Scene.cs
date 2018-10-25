@@ -113,8 +113,9 @@ namespace Graphics
 			initRenderingGL();
 			initPerspective();
 
+			m_xTranslate = -7;
+			m_yTranslate = -3;
 			m_zTranslate = -10;
-			m_yTranslate = -1;
 
 			m_helicopter.Init();
 			m_skyBox.Init();
