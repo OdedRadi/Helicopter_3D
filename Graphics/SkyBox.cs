@@ -52,6 +52,7 @@ namespace Graphics
 			GL.glColor3f(1, 1, 1);
 
 			// front
+			GL.glNormal3f(0, 0, -1);
 			GL.glBindTexture(GL.GL_TEXTURE_2D, m_frontTexture);
 			GL.glBegin(GL.GL_QUADS);
 			GL.glTexCoord2f(0.0f, 0.0f); GL.glVertex3f(-m_textureSize, -m_textureSize, m_textureSize);
@@ -61,6 +62,7 @@ namespace Graphics
 			GL.glEnd();
 
 			// back
+			GL.glNormal3f(0, 0, 1);
 			GL.glBindTexture(GL.GL_TEXTURE_2D, m_backTexture);
 			GL.glBegin(GL.GL_QUADS);
 			GL.glTexCoord2f(0.0f, 0.0f); GL.glVertex3f(m_textureSize, -m_textureSize, -m_textureSize);
@@ -70,6 +72,7 @@ namespace Graphics
 			GL.glEnd();
 
 			// top
+			GL.glNormal3f(0, -1, 0);
 			GL.glBindTexture(GL.GL_TEXTURE_2D, m_topTexture);
 			GL.glBegin(GL.GL_QUADS);
 			GL.glTexCoord2f(0.0f, 0.0f); GL.glVertex3f(-m_textureSize, m_textureSize, m_textureSize);
@@ -79,6 +82,7 @@ namespace Graphics
 			GL.glEnd();
 
 			// bottom
+			GL.glNormal3f(0, 1, 0);
 			GL.glBindTexture(GL.GL_TEXTURE_2D, m_bottomTexture);
 			GL.glBegin(GL.GL_QUADS);
 			GL.glTexCoord2f(0.0f, 0.0f); GL.glVertex3f(-m_textureSize, -m_textureSize, -m_textureSize);
@@ -88,6 +92,7 @@ namespace Graphics
 			GL.glEnd();
 
 			// right
+			GL.glNormal3f(-1, 0, 0);
 			GL.glBindTexture(GL.GL_TEXTURE_2D, m_rightTexture);
 			GL.glBegin(GL.GL_QUADS);
 			GL.glTexCoord2f(0.0f, 0.0f); GL.glVertex3f(m_textureSize, -m_textureSize, m_textureSize);
@@ -97,6 +102,7 @@ namespace Graphics
 			GL.glEnd();
 
 			// left
+			GL.glNormal3f(1, 0, 0);
 			GL.glBindTexture(GL.GL_TEXTURE_2D, m_leftTexture);
 			GL.glBegin(GL.GL_QUADS);
 			GL.glTexCoord2f(0.0f, 0.0f); GL.glVertex3f(-m_textureSize, -m_textureSize, -m_textureSize);

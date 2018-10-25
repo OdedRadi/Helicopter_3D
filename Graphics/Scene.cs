@@ -45,9 +45,42 @@ namespace Graphics
 		#region properties
 
 		public bool LightSourceDrawing { private get; set; }
-		public float LightPositionX { private get; set; }
-		public float LightPositionY { private get; set; }
-		public float LightPositionZ { private get; set; }
+
+		public float LightPositionX
+		{
+			private get
+			{
+				return m_light.X;
+			}
+			set
+			{
+				m_light.X = value;
+			}
+		}
+
+		public float LightPositionY
+		{
+			private get
+			{
+				return m_light.Y;
+			}
+			set
+			{
+				m_light.Y = value;
+			}
+		}
+
+		public float LightPositionZ
+		{
+			private get
+			{
+				return m_light.Z;
+			}
+			set
+			{
+				m_light.Z = value;
+			}
+		}
 
 		public float LookAtEyeX { private get; set; }
 		public float LookAtEyeY { private get; set; }
@@ -86,6 +119,7 @@ namespace Graphics
 			m_helicopter.Init();
 			m_skyBox.Init();
 			m_skyscraper.Init();
+			m_light.Init();
 		}
 
 		private void initPixelFormat()
@@ -164,8 +198,6 @@ namespace Graphics
 			GL.glLoadIdentity();
 			GL.glTranslated(0, 0, -5);
 
-			m_light.SetPosition(LightPositionX, LightPositionY, LightPositionZ);
-
 			GLU.gluLookAt(
 				LookAtEyeX, LookAtEyeY, LookAtEyeZ, 
 				LookAtCenterX, LookAtCenterY, LookAtCenterZ, 
@@ -213,62 +245,48 @@ namespace Graphics
 
 		private void drawReflectedScene()
 		{
+			GL.glPushMatrix();
+
+			// setting light source Z position negetive, because reflected scene is drawing negetive at Z axis
+			m_light.Z *= -1;
+			m_light.SetEnable(true);
+			m_light.Z *= -1; // correct the Z position for correct reflected shadow drawing
+
+			// move to skyscraper origins
+			GL.glRotatef(m_yRotate, 0, 1, 0);
+			GL.glTranslatef(m_xTranslate, m_yTranslate, m_zTranslate);
+
+			m_skyscraper.DrawReflection(m_light.Position);
+
 			drawSkyboxReflection();
 
 			if (m_zTranslate < -1)
 			{
 				drawHelicopterReflection();
 			}
+			
+			// after finished drawing, activate the original light position again
+			m_light.SetEnable(true);
+
+			GL.glPopMatrix();
 		}
 
 		private void drawHelicopterReflection()
 		{
-			GL.glPushMatrix();
+			// set helicopter drawing trasnlation and rotating
+			float[] drawingTranslation = new float[3] { -m_xTranslate, -m_yTranslate, -m_zTranslate };
+			float[] drawingRotation = new float[3] { 0, -m_yRotate, 0 };
 
-			// move to skyscraper origins
-			GL.glRotatef(m_yRotate, 0, 1, 0);
-			GL.glTranslatef(m_xTranslate, m_yTranslate, m_zTranslate);
-
-			// get helicopter drawing trasnlation
-			float[] drawingTranslation = new float[3];
-
-			drawingTranslation[0] = -m_xTranslate;
-			drawingTranslation[1] = -m_yTranslate;
-			drawingTranslation[2] = -m_zTranslate;
-
-			// get helicopter drawing rotating
-			float[] drawingRotation = new float[3];
-
-			drawingRotation[0] = 0;
-			drawingRotation[1] = -m_yRotate;
-			drawingRotation[2] = 0;
-
-			m_skyscraper.DrawReflection(m_helicopter, drawingTranslation, drawingRotation, m_light.Position);
-			
-			GL.glPopMatrix();
+			m_skyscraper.DrawComponentReflection(m_helicopter, drawingTranslation, drawingRotation, m_light.Position);	
 		}
 
 		private void drawSkyboxReflection()
 		{
-			GL.glPushMatrix();
+			// set skybox drawing trasnlation and rotating
+			float[] drawingTranslation = new float[3] { -m_xTranslate, -m_yTranslate, -m_zTranslate };
+			float[] drawingRotation = new float[3] { 0, 0, 0 }; // skybox no affected by rotation
 
-			// move to skyscraper origins
-			GL.glRotatef(m_yRotate, 0, 1, 0);
-			GL.glTranslatef(m_xTranslate, m_yTranslate, m_zTranslate);
-			
-			// get skybox drawing trasnlation
-			float[] drawingTranslation = new float[3];
-
-			drawingTranslation[0] = -m_xTranslate;
-			drawingTranslation[1] = -m_yTranslate;
-			drawingTranslation[2] = -m_zTranslate;
-
-			// skybox not affected by rotation
-			float[] drawingRotation = new float[3] { 0, 0, 0 };
-
-			m_skyscraper.DrawReflection(m_skyBox, drawingTranslation, drawingRotation, m_light.Position);
-			
-			GL.glPopMatrix();
+			m_skyscraper.DrawComponentReflection(m_skyBox, drawingTranslation, drawingRotation, m_light.Position);
 		}
 
 		private void drawShadows()

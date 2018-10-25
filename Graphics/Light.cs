@@ -9,20 +9,18 @@ namespace Graphics
 		public Light(uint lightID)
 		{
 			m_glLightId = 0x4000 + lightID;
+
+			
 		}
 
-		public void SetPosition(float x, float y, float z)
+		public void Init()
 		{
-			X = x;
-			Y = y;
-			Z = z;
-
 			GL.glLightfv(m_glLightId, GL.GL_AMBIENT, new float[] { 0.3f, 0.3f, 0.3f, 1f });
 		}
 
-		public float X { get; private set; }
-		public float Y { get; private set; }
-		public float Z { get; private set; }
+		public float X { get; set; }
+		public float Y { get; set; }
+		public float Z { get; set; }
 		public float[] Position { get { return new float[] { X, Y, Z, 1 }; } }
 
 		public void SetEnable(bool enable)

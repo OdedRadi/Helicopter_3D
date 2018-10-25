@@ -1,4 +1,5 @@
-﻿using Logics;
+﻿using System;
+using Logics;
 using OpenGL;
 
 namespace Graphics
@@ -83,6 +84,31 @@ namespace Graphics
 			drawFloor();
 			drawBottomPart();
 
+			GL.glPopMatrix();
+		}
+
+		public void DrawReflection(float[] lightPosition)
+		{
+			GL.glPushMatrix();
+
+			// get the floor matrix before scaling
+			float[] floorMatrix = getShadowMatrix(eShadowMatrices.Floor, lightPosition);
+
+			GL.glScalef(1, 1, -1);
+			beginStencil(eStencils.ReflectedFloor);
+
+			// drawing reflcted floor
+			drawFloor();
+
+			// multiply the floor matrix and drawing reflcted shadow
+			GL.glDisable(GL.GL_LIGHTING);
+			GL.glTranslatef(0, 0.01f, 0);
+			GL.glMultMatrixf(floorMatrix);
+			GL.glColor3f(0.15f, 0.15f, 0.15f);
+			DrawShadow();
+			GL.glEnable(GL.GL_LIGHTING);
+
+			stopStencil();
 			GL.glPopMatrix();
 		}
 
@@ -316,8 +342,8 @@ namespace Graphics
 		}
 		#endregion
 
-		#region reflection drawing
-		public void DrawReflection(IGraphicComponent component, float[] drawingTranslation, float[] drawingRotation, float[] lightPosition)
+		#region component reflection drawing
+		public void DrawComponentReflection(IGraphicComponent component, float[] drawingTranslation, float[] drawingRotation, float[] lightPosition)
 		{
 			GL.glPushMatrix();
 
@@ -329,9 +355,6 @@ namespace Graphics
 			beginStencil(eStencils.Reflection);
 
 			GL.glScalef(1, 1, -1);
-
-			// drawing skyscraper floor reflection anyway
-			drawFloor();
 
 			GL.glTranslatef(drawingTranslation[0], drawingTranslation[1], drawingTranslation[2]);
 			GL.glRotatef(drawingRotation[0], 1, 0, 0);
